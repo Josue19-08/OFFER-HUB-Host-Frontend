@@ -5,7 +5,9 @@ export const metadata: Metadata = {
   title: "OFFER-HUB",
   description: "OFFER-HUB - Your marketplace platform",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/OFFER-HUB-logo.png",
+    shortcut: "/OFFER-HUB-logo.png",
+    apple: "/OFFER-HUB-logo.png",
   },
 };
 
