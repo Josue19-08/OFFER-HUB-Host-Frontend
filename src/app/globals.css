@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+/* Dark mode variant (class-based) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* Primary (Teal) */
+  --color-primary: #149A9B;
+  --color-primary-alt: #159A9C;
+  --color-primary-hover: #0d7377;
+  --color-primary-hover-alt: #0d6e6e;
+
+  /* Secondary (Dark Blue) */
+  --color-secondary: #002333;
+
+  /* Accent */
+  --color-accent: #15949C;
+
+  /* Neutrals */
+  --color-text-primary: #19213D;
+  --color-text-secondary: #6D758F;
+  --color-border: #B4B9C9;
+  --color-border-light: #E1E4ED;
+  --color-background: #F1F3F7;
+  --color-input: #DEEFE7;
+
+  /* States */
+  --color-success: #16a34a;
+  --color-warning: #d97706;
+  --color-error: #FF0000;
+}
+
+/* Neumorphism shadows and custom properties */
+:root {
+  /* Light mode neumorphism */
+  --shadow-neumorphic-light: 6px 6px 12px #d1d5db, -6px -6px 12px #ffffff;
+  --shadow-neumorphic-inset-light: inset 4px 4px 8px #d1d5db, inset -4px -4px 8px #ffffff;
+
+  /* Dark mode neumorphism */
+  --shadow-neumorphic-dark: 6px 6px 12px #0a0f1a, -6px -6px 12px #1e2a4a;
+  --shadow-neumorphic-inset-dark: inset 4px 4px 8px #0a0f1a, inset -4px -4px 8px #1e2a4a;
+
+  /* Hero gradient */
+  --gradient-hero: linear-gradient(to right, #002333, #15949C);
+}
+
+/* Base styles */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Dark mode defaults */
+.dark {
+  color-scheme: dark;
+}
