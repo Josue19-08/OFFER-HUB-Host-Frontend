@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Container, Logo } from "@/components/ui";
 import { cn } from "@/lib/cn";
 
@@ -13,6 +14,12 @@ const navLinks = [
 
 export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  const isActiveLink = (href: string) => {
+    if (href === "/") return pathname === "/";
+    return pathname.startsWith(href);
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-[var(--shadow-neumorphic-light)]">
@@ -27,9 +34,17 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-text-secondary hover:text-text-primary font-medium transition-colors"
+                className={cn(
+                  "font-medium transition-colors relative",
+                  isActiveLink(link.href)
+                    ? "text-primary"
+                    : "text-text-secondary hover:text-text-primary"
+                )}
               >
                 {link.label}
+                {isActiveLink(link.href) && (
+                  <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full" />
+                )}
               </Link>
             ))}
           </div>
@@ -79,7 +94,12 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-text-secondary hover:text-text-primary font-medium py-2"
+                className={cn(
+                  "font-medium py-2 transition-colors",
+                  isActiveLink(link.href)
+                    ? "text-primary"
+                    : "text-text-secondary hover:text-text-primary"
+                )}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {link.label}
