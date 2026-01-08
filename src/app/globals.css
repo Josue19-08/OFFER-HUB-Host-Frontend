@@ -151,3 +151,61 @@ body {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* Neumorphic Range Slider */
+.range-neumorphic {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 8px;
+  background: #F1F3F7;
+  box-shadow: inset 2px 2px 4px #d1d5db, inset -2px -2px 4px #ffffff;
+  outline: none;
+  cursor: pointer;
+}
+
+.range-neumorphic::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #ffffff, #e6e6e6);
+  box-shadow: 3px 3px 6px #d1d5db, -3px -3px 6px #ffffff;
+  cursor: pointer;
+  border: 3px solid #149A9B;
+  transition: all 0.2s ease;
+}
+
+.range-neumorphic::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 4px 4px 8px #d1d5db, -4px -4px 8px #ffffff;
+}
+
+.range-neumorphic::-webkit-slider-thumb:active {
+  transform: scale(0.95);
+  box-shadow: inset 2px 2px 4px #d1d5db, inset -2px -2px 4px #ffffff;
+}
+
+.range-neumorphic::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #ffffff, #e6e6e6);
+  box-shadow: 3px 3px 6px #d1d5db, -3px -3px 6px #ffffff;
+  cursor: pointer;
+  border: 3px solid #149A9B;
+  transition: all 0.2s ease;
+}
+
+.range-neumorphic::-moz-range-thumb:hover {
+  transform: scale(1.1);
+}
+
+.range-neumorphic::-moz-range-track {
+  height: 8px;
+  border-radius: 8px;
+  background: #F1F3F7;
+  box-shadow: inset 2px 2px 4px #d1d5db, inset -2px -2px 4px #ffffff;
+}

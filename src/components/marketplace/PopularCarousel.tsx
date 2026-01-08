@@ -120,7 +120,7 @@ export function PopularCarousel({ offers }: PopularCarouselProps) {
       <div
         ref={scrollRef}
         onScroll={checkScrollButtons}
-        className="flex gap-5 overflow-x-auto scrollbar-hide pb-2 -mx-2 px-2"
+        className="flex gap-5 overflow-x-auto scrollbar-hide pb-2"
       >
         {offers.map((offer, index) => (
           <div
@@ -140,10 +140,6 @@ export function PopularCarousel({ offers }: PopularCarouselProps) {
           </div>
         ))}
       </div>
-
-      {/* Gradient fade edges */}
-      <div className="hidden lg:block absolute left-0 top-12 bottom-0 w-8 bg-gradient-to-r from-background to-transparent pointer-events-none" />
-      <div className="hidden lg:block absolute right-0 top-12 bottom-0 w-8 bg-gradient-to-l from-background to-transparent pointer-events-none" />
     </div>
   );
 }

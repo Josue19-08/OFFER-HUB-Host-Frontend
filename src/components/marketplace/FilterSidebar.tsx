@@ -43,16 +43,16 @@ export function FilterSidebar() {
             ${salaryRange.max.toLocaleString()}
           </span>
         </div>
-        <div className="relative">
+        <div className="relative py-2">
           <input
             type="range"
             min={300}
             max={5000}
             value={salaryRange.max}
             onChange={(e) => setSalaryRange((prev) => ({ ...prev, max: Number(e.target.value) }))}
-            className="w-full h-2 bg-border-light rounded-lg appearance-none cursor-pointer accent-primary"
+            className="range-neumorphic"
           />
-          <div className="flex justify-between mt-2 text-xs text-text-secondary">
+          <div className="flex justify-between mt-3 text-xs text-text-secondary">
             <span>${salaryRange.min}</span>
             <span>$5k</span>
           </div>
