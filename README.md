@@ -1,97 +1,50 @@
 # OFFER-HUB Frontend
 
-Production-grade Next.js 16 application with App Router.
+Next.js 16 · TypeScript 5 · Tailwind CSS 4
 
-## Tech Stack
-
-- **Framework**: Next.js 16 (App Router)
-- **Language**: TypeScript 5
-- **Styling**: Tailwind CSS 4
-- **Auth**: Auth.js v5
-- **State**: Zustand, React Query (configured, not implemented)
-- **Forms**: React Hook Form (configured, not implemented)
-- **Validation**: Zod
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js >= 20.9
-- npm
-
-### Installation
+## Quick Start
 
 ```bash
 npm install
-```
-
-### Environment Setup
-
-Copy the example environment file and fill in the values:
-
-```bash
 cp .env.example .env.local
-```
-
-Required variables:
-- `AUTH_SECRET` - Secret for Auth.js session encryption
-- `NEXT_PUBLIC_API_BASE_URL` - Base URL for API requests
-
-### Development
-
-```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000)
 
-### Build
+## Scripts
 
-```bash
-npm run build
-npm start
-```
-
-### Linting and Formatting
-
-```bash
-npm run lint        # Check for lint errors
-npm run lint:fix    # Fix lint errors
-npm run format      # Format code with Prettier
-npm run format:check # Check formatting
-```
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run start` | Start production server |
+| `npm run lint` | Run ESLint |
+| `npm run format` | Format with Prettier |
 
 ## Project Structure
 
 ```
 src/
-  app/           # Next.js App Router pages and layouts
-  auth.ts        # Auth.js v5 configuration
+  app/           # Pages and layouts (App Router)
   components/    # React components
-    ui/          # shadcn/ui components
-    bento/       # Bento grid components
-    neumorphism/ # Neumorphism components
-  lib/           # Utility functions
-  services/      # API client and services
-  types/         # TypeScript type definitions
-docs/            # Project documentation
+  lib/           # Utilities
+  services/      # API client
+  types/         # TypeScript definitions
+docs/            # Documentation
 ```
 
 ## Documentation
 
-See the [docs](./docs) folder for detailed documentation:
+| Document | Description |
+|----------|-------------|
+| [Architecture](./docs/architecture.md) | Project structure and patterns |
+| [Standards](./docs/standards.md) | Code standards and ESLint rules |
+| [Naming](./docs/naming.md) | Naming conventions |
+| [API Response](./docs/api-response-standard.md) | API contract specification |
+| [Style Guide](./docs/style-guide.md) | Design system and colors |
+| [Mock Data](./docs/mock-data.md) | Mock data organization |
 
-- [Architecture](./docs/architecture.md)
-- [Code Standards](./docs/standards.md)
-- [Naming Conventions](./docs/naming.md)
-- [API Response Standard](./docs/api-response-standard.md)
-- [Style Guide](./docs/style-guide.md)
-- [Mock Data](./docs/mock-data.md)
+## Tech Stack
 
-## Design System
-
-- **Style**: Bento grids + Neumorphism
-- **Theme**: Dark-first design
-- **Colors**: Teal primary, Dark blue secondary
-
-See [Style Guide](./docs/style-guide.md) for full color palette and design rules.
+Next.js 16 · React 19 · TypeScript 5 · Tailwind CSS 4 · Zod 4 · Auth.js v5 · Zustand · React Query · React Hook Form
