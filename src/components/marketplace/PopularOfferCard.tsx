@@ -27,9 +27,9 @@ export function PopularOfferCard({ offer, onClick }: PopularOfferCardProps) {
           <Image
             src={offer.company.logo}
             alt={offer.company.name}
-            width={40}
-            height={40}
-            className="rounded-full object-cover"
+            width={36}
+            height={48}
+            className="rounded-[14px] object-cover w-9 h-12"
           />
           <span className="text-sm font-medium text-text-secondary">{offer.company.name}</span>
         </div>

@@ -23,17 +23,17 @@ export function FreelancerCard({ freelancer }: FreelancerCardProps) {
       {/* Header with Avatar */}
       <div className="flex items-start gap-4 mb-5">
         <div className="relative flex-shrink-0">
-          <div className="p-1 rounded-full shadow-[3px_3px_6px_#d1d5db,-3px_-3px_6px_#ffffff]">
+          <div className="p-1 rounded-[24px] shadow-[3px_3px_6px_#d1d5db,-3px_-3px_6px_#ffffff]">
             <Image
               src={freelancer.avatar}
               alt={freelancer.name}
-              width={64}
-              height={64}
-              className="rounded-full object-cover"
+              width={56}
+              height={72}
+              className="rounded-[20px] object-cover w-14 h-[72px]"
             />
           </div>
           {freelancer.isAvailable && (
-            <span className="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full shadow-sm" />
+            <span className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 border-2 border-white rounded-full shadow-sm" />
           )}
         </div>
         <div className="flex-1 min-w-0 pt-1">
