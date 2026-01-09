@@ -140,7 +140,7 @@ body {
     transform: translateX(0) translateY(0);
   }
   50% {
-    transform: translateX(-15px) translateY(-5px);
+    transform: translateX(-30px) translateY(-12px);
   }
 }
 
@@ -149,7 +149,7 @@ body {
     transform: translateX(0) translateY(0);
   }
   50% {
-    transform: translateX(20px) translateY(-8px);
+    transform: translateX(40px) translateY(-18px);
   }
 }
 
@@ -158,7 +158,7 @@ body {
     transform: translateX(0) translateY(0);
   }
   50% {
-    transform: translateX(-10px) translateY(-3px);
+    transform: translateX(-25px) translateY(-10px);
   }
 }
 
@@ -167,7 +167,16 @@ body {
     transform: translateX(0) translateY(0);
   }
   50% {
-    transform: translateX(15px) translateY(-6px);
+    transform: translateX(35px) translateY(-15px);
+  }
+}
+
+@keyframes waveFloat5 {
+  0%, 100% {
+    transform: translateX(0) translateY(0);
+  }
+  50% {
+    transform: translateX(-20px) translateY(-8px);
   }
 }
 
@@ -203,19 +212,23 @@ body {
 }
 
 .animate-wave-1 {
-  animation: waveFloat1 6s ease-in-out infinite;
+  animation: waveFloat1 4s ease-in-out infinite;
 }
 
 .animate-wave-2 {
-  animation: waveFloat2 8s ease-in-out infinite;
+  animation: waveFloat2 5s ease-in-out infinite;
 }
 
 .animate-wave-3 {
-  animation: waveFloat3 7s ease-in-out infinite;
+  animation: waveFloat3 4.5s ease-in-out infinite;
 }
 
 .animate-wave-4 {
-  animation: waveFloat4 9s ease-in-out infinite;
+  animation: waveFloat4 6s ease-in-out infinite;
+}
+
+.animate-wave-5 {
+  animation: waveFloat5 5.5s ease-in-out infinite;
 }
 
 /* Stagger animation delays */
