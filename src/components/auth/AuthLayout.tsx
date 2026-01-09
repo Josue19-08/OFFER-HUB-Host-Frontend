@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { Logo } from "@/components/ui";
 import { cn } from "@/lib/cn";
 
@@ -13,9 +12,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
     <div className="h-screen bg-background relative overflow-hidden">
       {/* Header */}
       <header className="absolute top-0 left-0 right-0 z-10 p-4 sm:p-6">
-        <Link href="/">
-          <Logo size="md" />
-        </Link>
+        <Logo size="md" className="hover:opacity-80 transition-opacity" />
       </header>
 
       {/* Wave Background */}
