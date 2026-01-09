@@ -1,11 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { useModeStore } from "@/stores/mode-store";
 import { useEffect } from "react";
+
+interface Attachment {
+  id: string;
+  file: File;
+  preview?: string;
+  type: "image" | "document";
+}
 
 interface OfferFormData {
   title: string;
@@ -59,6 +66,10 @@ const MIN_TITLE_LENGTH = 10;
 const MIN_DESCRIPTION_LENGTH = 50;
 const MIN_BUDGET = 10;
 const MOCK_API_DELAY = 1500;
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_ATTACHMENTS = 5;
+const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+const ALLOWED_DOC_TYPES = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "text/plain"];
 
 function validateOfferForm(formData: OfferFormData): FormErrors {
   const errors: FormErrors = {};
@@ -126,12 +137,86 @@ export default function CreateOfferPage(): React.JSX.Element {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [formData, setFormData] = useState<OfferFormData>(INITIAL_FORM_DATA);
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [attachmentError, setAttachmentError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (mode !== "client") {
       setMode("client");
     }
   }, [mode, setMode]);
+
+  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>): void {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setAttachmentError(null);
+
+    if (attachments.length + files.length > MAX_ATTACHMENTS) {
+      setAttachmentError(`Maximum ${MAX_ATTACHMENTS} attachments allowed`);
+      return;
+    }
+
+    const newAttachments: Attachment[] = [];
+
+    Array.from(files).forEach((file) => {
+      if (file.size > MAX_FILE_SIZE) {
+        setAttachmentError(`File "${file.name}" exceeds 10MB limit`);
+        return;
+      }
+
+      const isImage = ALLOWED_IMAGE_TYPES.includes(file.type);
+      const isDoc = ALLOWED_DOC_TYPES.includes(file.type);
+
+      if (!isImage && !isDoc) {
+        setAttachmentError(`File "${file.name}" is not a supported format`);
+        return;
+      }
+
+      const attachment: Attachment = {
+        id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        file,
+        type: isImage ? "image" : "document",
+      };
+
+      if (isImage) {
+        attachment.preview = URL.createObjectURL(file);
+      }
+
+      newAttachments.push(attachment);
+    });
+
+    setAttachments((prev) => [...prev, ...newAttachments]);
+
+    // Reset input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }
+
+  function removeAttachment(id: string): void {
+    setAttachments((prev) => {
+      const attachment = prev.find((a) => a.id === id);
+      if (attachment?.preview) {
+        URL.revokeObjectURL(attachment.preview);
+      }
+      return prev.filter((a) => a.id !== id);
+    });
+    setAttachmentError(null);
+  }
+
+  function getFileIcon(type: "image" | "document"): string {
+    return type === "image"
+      ? "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+      : "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z";
+  }
+
+  function formatFileSize(bytes: number): string {
+    if (bytes < 1024) return bytes + " B";
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+    return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+  }
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -296,6 +381,145 @@ export default function CreateOfferPage(): React.JSX.Element {
                 )}
               />
             </FormField>
+          </div>
+
+          {/* Attachments (Optional) */}
+          <div>
+            <label className="block text-sm font-medium text-text-primary mb-2">
+              Attachments <span className="text-text-secondary font-normal">(Optional)</span>
+            </label>
+            <p className="text-xs text-text-secondary mb-3">
+              Add images or documents to show what you&apos;re looking for. Max 5 files, 10MB each.
+            </p>
+
+            {/* Upload Area */}
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              className={cn(
+                "border-2 border-dashed border-border-light rounded-xl p-6",
+                "flex flex-col items-center justify-center gap-2",
+                "cursor-pointer",
+                "hover:border-primary/50 hover:bg-primary/5",
+                "transition-all duration-200",
+                attachments.length >= MAX_ATTACHMENTS && "opacity-50 pointer-events-none"
+              )}
+            >
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <svg
+                  className="w-6 h-6 text-primary"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+              <p className="text-sm text-text-primary font-medium">
+                Click to upload files
+              </p>
+              <p className="text-xs text-text-secondary">
+                PNG, JPG, GIF, PDF, DOC up to 10MB
+              </p>
+            </div>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              accept="image/jpeg,image/png,image/gif,image/webp,.pdf,.doc,.docx,.txt"
+              onChange={handleFileSelect}
+              className="hidden"
+            />
+
+            {/* Error Message */}
+            {attachmentError && (
+              <p className="mt-2 text-sm text-error">{attachmentError}</p>
+            )}
+
+            {/* Attachments Preview */}
+            {attachments.length > 0 && (
+              <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                {attachments.map((attachment) => (
+                  <div
+                    key={attachment.id}
+                    className={cn(
+                      "relative group rounded-xl overflow-hidden",
+                      "bg-background",
+                      "shadow-[2px_2px_4px_#d1d5db,-2px_-2px_4px_#ffffff]"
+                    )}
+                  >
+                    {attachment.type === "image" && attachment.preview ? (
+                      <div className="aspect-square">
+                        <img
+                          src={attachment.preview}
+                          alt={attachment.file.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="aspect-square flex flex-col items-center justify-center p-3">
+                        <svg
+                          className="w-8 h-8 text-primary mb-2"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d={getFileIcon(attachment.type)}
+                          />
+                        </svg>
+                        <p className="text-xs text-text-primary text-center truncate w-full px-1">
+                          {attachment.file.name.split(".").pop()?.toUpperCase()}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* File info overlay */}
+                    <div className="absolute inset-x-0 bottom-0 bg-black/60 p-2">
+                      <p className="text-xs text-white truncate">{attachment.file.name}</p>
+                      <p className="text-xs text-white/70">{formatFileSize(attachment.file.size)}</p>
+                    </div>
+
+                    {/* Remove button */}
+                    <button
+                      type="button"
+                      onClick={() => removeAttachment(attachment.id)}
+                      className={cn(
+                        "absolute top-2 right-2",
+                        "w-6 h-6 rounded-full",
+                        "bg-error text-white",
+                        "flex items-center justify-center",
+                        "opacity-0 group-hover:opacity-100",
+                        "transition-opacity duration-200",
+                        "cursor-pointer"
+                      )}
+                    >
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <p className="mt-2 text-xs text-text-secondary">
+              {attachments.length} / {MAX_ATTACHMENTS} files attached
+            </p>
           </div>
 
           {/* Submit Buttons */}
