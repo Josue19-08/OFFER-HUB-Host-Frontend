@@ -11,8 +11,8 @@ export function AuthLayout({ children }: AuthLayoutProps) {
   return (
     <div className="h-screen bg-background relative overflow-hidden">
       {/* Header */}
-      <header className="absolute top-0 left-0 right-0 z-10 p-4 sm:p-6">
-        <Logo size="md" className="hover:opacity-80 transition-opacity" />
+      <header className="absolute top-0 left-0 right-0 z-20 p-4 sm:p-6">
+        <Logo size="md" className="hover:opacity-80 transition-opacity cursor-pointer" />
       </header>
 
       {/* Wave Background */}
