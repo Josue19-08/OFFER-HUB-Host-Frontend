@@ -228,7 +228,7 @@ function AttachmentPreview({ attachment, onRemove }: AttachmentPreviewProps): Re
 
 export default function CreateOfferPage(): React.JSX.Element {
   const router = useRouter();
-  const { mode, setMode } = useModeStore();
+  const { setMode } = useModeStore();
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [formData, setFormData] = useState<OfferFormData>(INITIAL_FORM_DATA);
@@ -236,11 +236,11 @@ export default function CreateOfferPage(): React.JSX.Element {
   const [attachmentError, setAttachmentError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Set client mode only on initial mount, not on every mode change
   useEffect(() => {
-    if (mode !== "client") {
-      setMode("client");
-    }
-  }, [mode, setMode]);
+    setMode("client");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>): void {
     const files = e.target.files;

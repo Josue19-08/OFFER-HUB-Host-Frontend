@@ -164,13 +164,13 @@ function ActivityItemComponent({
 
 export default function ClientDashboardPage(): React.JSX.Element {
   const user = useAuthStore((state) => state.user);
-  const { mode, setMode } = useModeStore();
+  const { setMode } = useModeStore();
 
+  // Set client mode only on initial mount, not on every mode change
   useEffect(() => {
-    if (mode !== "client") {
-      setMode("client");
-    }
-  }, [mode, setMode]);
+    setMode("client");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="space-y-6">
