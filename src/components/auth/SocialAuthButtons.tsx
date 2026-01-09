@@ -10,10 +10,10 @@ export function SocialAuthButtons() {
         type="button"
         className={cn(
           "flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl",
-          "bg-white border border-border-light",
+          "bg-white border border-border-light cursor-pointer",
           "shadow-[3px_3px_6px_#d1d5db,-3px_-3px_6px_#ffffff]",
-          "hover:shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]",
-          "active:shadow-[inset_3px_3px_6px_#d1d5db,inset_-3px_-3px_6px_#ffffff]",
+          "hover:shadow-[5px_5px_10px_#d1d5db,-5px_-5px_10px_#ffffff] hover:scale-[1.02]",
+          "active:shadow-[inset_3px_3px_6px_#d1d5db,inset_-3px_-3px_6px_#ffffff] active:scale-[0.98]",
           "transition-all duration-200"
         )}
       >
@@ -43,10 +43,10 @@ export function SocialAuthButtons() {
         type="button"
         className={cn(
           "flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl",
-          "bg-secondary text-white",
+          "bg-secondary text-white cursor-pointer",
           "shadow-[3px_3px_6px_#d1d5db,-3px_-3px_6px_#ffffff]",
-          "hover:shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]",
-          "active:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.3)]",
+          "hover:shadow-[5px_5px_10px_#d1d5db,-5px_-5px_10px_#ffffff] hover:scale-[1.02] hover:bg-secondary/90",
+          "active:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.3)] active:scale-[0.98]",
           "transition-all duration-200"
         )}
       >
