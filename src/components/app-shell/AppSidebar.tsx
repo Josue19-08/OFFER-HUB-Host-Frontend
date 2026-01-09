@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
@@ -42,10 +43,21 @@ function getNavLinkStyles(isActive: boolean): string {
 export function AppSidebar({ isOpen: _isOpen, onClose: _onClose }: AppSidebarProps): React.JSX.Element {
   const pathname = usePathname();
   const { mode, setMode } = useModeStore();
+  const [hydrated, setHydrated] = useState(false);
+
+  // Wait for hydration to avoid SSR mismatch with localStorage
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
   const navItems = getNavigationItems(mode);
 
   function isActiveLink(href: string): boolean {
     return pathname === href || pathname.startsWith(href + "/");
+  }
+
+  function handleModeChange(newMode: UserMode): void {
+    setMode(newMode);
   }
 
   return (
@@ -68,14 +80,18 @@ export function AppSidebar({ isOpen: _isOpen, onClose: _onClose }: AppSidebarPro
         >
           <div className="flex items-center gap-1">
             <button
-              onClick={() => setMode("freelancer")}
-              className={getModeToggleStyles(mode === "freelancer")}
+              type="button"
+              onClick={() => handleModeChange("freelancer")}
+              className={getModeToggleStyles(hydrated && mode === "freelancer")}
+              disabled={!hydrated}
             >
               Freelancer
             </button>
             <button
-              onClick={() => setMode("client")}
-              className={getModeToggleStyles(mode === "client")}
+              type="button"
+              onClick={() => handleModeChange("client")}
+              className={getModeToggleStyles(hydrated && mode === "client")}
+              disabled={!hydrated}
             >
               Client
             </button>
