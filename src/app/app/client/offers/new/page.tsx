@@ -1,11 +1,16 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { useModeStore } from "@/stores/mode-store";
-import { useEffect } from "react";
+import {
+  NEUMORPHIC_CARD,
+  NEUMORPHIC_INPUT,
+  ICON_BUTTON,
+} from "@/lib/styles";
+import { Icon, ICON_PATHS } from "@/components/ui/Icon";
 
 interface Attachment {
   id: string;
@@ -43,15 +48,6 @@ const CATEGORIES = [
   { value: "other", label: "Other" },
 ];
 
-const INPUT_BASE_STYLES = cn(
-  "w-full px-4 py-3 rounded-xl",
-  "bg-background",
-  "shadow-[inset_2px_2px_4px_#d1d5db,inset_-2px_-2px_4px_#ffffff]",
-  "text-text-primary placeholder-text-secondary",
-  "outline-none focus:ring-2 focus:ring-primary/20",
-  "transition-all duration-200"
-);
-
 const INPUT_ERROR_STYLES = "ring-2 ring-error/50";
 
 const INITIAL_FORM_DATA: OfferFormData = {
@@ -66,10 +62,15 @@ const MIN_TITLE_LENGTH = 10;
 const MIN_DESCRIPTION_LENGTH = 50;
 const MIN_BUDGET = 10;
 const MOCK_API_DELAY = 1500;
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const MAX_ATTACHMENTS = 5;
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
-const ALLOWED_DOC_TYPES = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "text/plain"];
+const ALLOWED_DOC_TYPES = [
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "text/plain",
+];
 
 function validateOfferForm(formData: OfferFormData): FormErrors {
   const errors: FormErrors = {};
@@ -116,17 +117,111 @@ function validateOfferForm(formData: OfferFormData): FormErrors {
 interface FormFieldProps {
   label: string;
   error?: string;
+  hint?: string;
+  optional?: boolean;
   children: React.ReactNode;
 }
 
-function FormField({ label, error, children }: FormFieldProps): React.JSX.Element {
+function FormField({
+  label,
+  error,
+  hint,
+  optional,
+  children,
+}: FormFieldProps): React.JSX.Element {
   return (
     <div>
       <label className="block text-sm font-medium text-text-primary mb-2">
         {label}
+        {optional && <span className="text-text-secondary font-normal"> (Optional)</span>}
       </label>
       {children}
+      {hint && <p className="mt-1 text-xs text-text-secondary">{hint}</p>}
       {error && <p className="mt-1 text-sm text-error">{error}</p>}
+    </div>
+  );
+}
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return bytes + " B";
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+  return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+}
+
+function LoadingSpinner(): React.JSX.Element {
+  return (
+    <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+      <circle
+        className="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="4"
+      />
+      <path
+        className="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+      />
+    </svg>
+  );
+}
+
+interface AttachmentPreviewProps {
+  attachment: Attachment;
+  onRemove: () => void;
+}
+
+function AttachmentPreview({ attachment, onRemove }: AttachmentPreviewProps): React.JSX.Element {
+  const iconPath =
+    attachment.type === "image" ? ICON_PATHS.image : ICON_PATHS.document;
+
+  return (
+    <div
+      className={cn(
+        "relative group rounded-xl overflow-hidden",
+        "bg-background",
+        "shadow-[2px_2px_4px_#d1d5db,-2px_-2px_4px_#ffffff]"
+      )}
+    >
+      {attachment.type === "image" && attachment.preview ? (
+        <div className="aspect-square">
+          <img
+            src={attachment.preview}
+            alt={attachment.file.name}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      ) : (
+        <div className="aspect-square flex flex-col items-center justify-center p-3">
+          <Icon path={iconPath} size="xl" className="text-primary mb-2" />
+          <p className="text-xs text-text-primary text-center truncate w-full px-1">
+            {attachment.file.name.split(".").pop()?.toUpperCase()}
+          </p>
+        </div>
+      )}
+
+      <div className="absolute inset-x-0 bottom-0 bg-black/60 p-2">
+        <p className="text-xs text-white truncate">{attachment.file.name}</p>
+        <p className="text-xs text-white/70">{formatFileSize(attachment.file.size)}</p>
+      </div>
+
+      <button
+        type="button"
+        onClick={onRemove}
+        className={cn(
+          "absolute top-2 right-2",
+          "w-6 h-6 rounded-full",
+          "bg-error text-white",
+          "flex items-center justify-center",
+          "opacity-0 group-hover:opacity-100",
+          "transition-opacity duration-200",
+          "cursor-pointer"
+        )}
+      >
+        <Icon path={ICON_PATHS.close} size="sm" />
+      </button>
     </div>
   );
 }
@@ -178,18 +273,14 @@ export default function CreateOfferPage(): React.JSX.Element {
         id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         file,
         type: isImage ? "image" : "document",
+        preview: isImage ? URL.createObjectURL(file) : undefined,
       };
-
-      if (isImage) {
-        attachment.preview = URL.createObjectURL(file);
-      }
 
       newAttachments.push(attachment);
     });
 
     setAttachments((prev) => [...prev, ...newAttachments]);
 
-    // Reset input
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -204,18 +295,6 @@ export default function CreateOfferPage(): React.JSX.Element {
       return prev.filter((a) => a.id !== id);
     });
     setAttachmentError(null);
-  }
-
-  function getFileIcon(type: "image" | "document"): string {
-    return type === "image"
-      ? "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-      : "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z";
-  }
-
-  function formatFileSize(bytes: number): string {
-    if (bytes < 1024) return bytes + " B";
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
-    return (bytes / (1024 * 1024)).toFixed(1) + " MB";
   }
 
   function handleChange(
@@ -242,36 +321,17 @@ export default function CreateOfferPage(): React.JSX.Element {
     await new Promise((resolve) => setTimeout(resolve, MOCK_API_DELAY));
     setIsLoading(false);
 
-    // Redirect to offers list (or dashboard for now)
     router.push("/app/client/dashboard");
   }
 
-  // Get minimum date for deadline (today)
   const today = new Date().toISOString().split("T")[0];
+  const canAddMoreFiles = attachments.length < MAX_ATTACHMENTS;
 
   return (
     <div className="space-y-6 max-w-3xl">
-      {/* Header */}
       <div className="flex items-center gap-4">
-        <Link
-          href="/app/client/dashboard"
-          className={cn(
-            "w-10 h-10 rounded-xl flex items-center justify-center",
-            "bg-white",
-            "shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]",
-            "hover:shadow-[2px_2px_4px_#d1d5db,-2px_-2px_4px_#ffffff]",
-            "transition-all duration-200"
-          )}
-        >
-          <svg
-            className="w-5 h-5 text-text-primary"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
+        <Link href="/app/client/dashboard" className={ICON_BUTTON}>
+          <Icon path={ICON_PATHS.chevronLeft} size="md" className="text-text-primary" />
         </Link>
         <div>
           <h1 className="text-2xl font-bold text-text-primary">Create New Offer</h1>
@@ -281,35 +341,26 @@ export default function CreateOfferPage(): React.JSX.Element {
         </div>
       </div>
 
-      {/* Form Card */}
-      <div
-        className={cn(
-          "p-6 rounded-2xl",
-          "bg-white",
-          "shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff]"
-        )}
-      >
+      <div className={NEUMORPHIC_CARD}>
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Title */}
           <FormField label="Offer Title" error={errors.title}>
             <input
               type="text"
               name="title"
               value={formData.title}
               onChange={handleChange}
-              className={cn(INPUT_BASE_STYLES, errors.title && INPUT_ERROR_STYLES)}
+              className={cn(NEUMORPHIC_INPUT, errors.title && INPUT_ERROR_STYLES)}
               placeholder="e.g., Build a responsive website for my business"
             />
           </FormField>
 
-          {/* Category */}
           <FormField label="Category" error={errors.category}>
             <select
               name="category"
               value={formData.category}
               onChange={handleChange}
               className={cn(
-                INPUT_BASE_STYLES,
+                NEUMORPHIC_INPUT,
                 "cursor-pointer",
                 errors.category && INPUT_ERROR_STYLES
               )}
@@ -322,28 +373,26 @@ export default function CreateOfferPage(): React.JSX.Element {
             </select>
           </FormField>
 
-          {/* Description */}
-          <FormField label="Description" error={errors.description}>
+          <FormField
+            label="Description"
+            error={errors.description}
+            hint={`${formData.description.length} / ${MIN_DESCRIPTION_LENGTH} minimum characters`}
+          >
             <textarea
               name="description"
               value={formData.description}
               onChange={handleChange}
               rows={6}
               className={cn(
-                INPUT_BASE_STYLES,
+                NEUMORPHIC_INPUT,
                 "resize-none",
                 errors.description && INPUT_ERROR_STYLES
               )}
               placeholder="Describe your project in detail. Include requirements, deliverables, and any specific skills needed..."
             />
-            <p className="mt-1 text-xs text-text-secondary">
-              {formData.description.length} / {MIN_DESCRIPTION_LENGTH} minimum characters
-            </p>
           </FormField>
 
-          {/* Budget and Deadline Row */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Budget */}
             <FormField label="Budget (USD)" error={errors.budget}>
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary">
@@ -356,17 +405,12 @@ export default function CreateOfferPage(): React.JSX.Element {
                   onChange={handleChange}
                   min={MIN_BUDGET}
                   step="1"
-                  className={cn(
-                    INPUT_BASE_STYLES,
-                    "pl-8",
-                    errors.budget && INPUT_ERROR_STYLES
-                  )}
+                  className={cn(NEUMORPHIC_INPUT, "pl-8", errors.budget && INPUT_ERROR_STYLES)}
                   placeholder="500"
                 />
               </div>
             </FormField>
 
-            {/* Deadline */}
             <FormField label="Deadline" error={errors.deadline}>
               <input
                 type="date"
@@ -375,7 +419,7 @@ export default function CreateOfferPage(): React.JSX.Element {
                 onChange={handleChange}
                 min={today}
                 className={cn(
-                  INPUT_BASE_STYLES,
+                  NEUMORPHIC_INPUT,
                   "cursor-pointer",
                   errors.deadline && INPUT_ERROR_STYLES
                 )}
@@ -383,48 +427,27 @@ export default function CreateOfferPage(): React.JSX.Element {
             </FormField>
           </div>
 
-          {/* Attachments (Optional) */}
-          <div>
-            <label className="block text-sm font-medium text-text-primary mb-2">
-              Attachments <span className="text-text-secondary font-normal">(Optional)</span>
-            </label>
+          <FormField label="Attachments" optional>
             <p className="text-xs text-text-secondary mb-3">
               Add images or documents to show what you&apos;re looking for. Max 5 files, 10MB each.
             </p>
 
-            {/* Upload Area */}
             <div
-              onClick={() => fileInputRef.current?.click()}
+              onClick={() => canAddMoreFiles && fileInputRef.current?.click()}
               className={cn(
                 "border-2 border-dashed border-border-light rounded-xl p-6",
                 "flex flex-col items-center justify-center gap-2",
                 "cursor-pointer",
                 "hover:border-primary/50 hover:bg-primary/5",
                 "transition-all duration-200",
-                attachments.length >= MAX_ATTACHMENTS && "opacity-50 pointer-events-none"
+                !canAddMoreFiles && "opacity-50 pointer-events-none"
               )}
             >
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <svg
-                  className="w-6 h-6 text-primary"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
+                <Icon path={ICON_PATHS.image} className="text-primary" />
               </div>
-              <p className="text-sm text-text-primary font-medium">
-                Click to upload files
-              </p>
-              <p className="text-xs text-text-secondary">
-                PNG, JPG, GIF, PDF, DOC up to 10MB
-              </p>
+              <p className="text-sm text-text-primary font-medium">Click to upload files</p>
+              <p className="text-xs text-text-secondary">PNG, JPG, GIF, PDF, DOC up to 10MB</p>
             </div>
 
             <input
@@ -436,83 +459,16 @@ export default function CreateOfferPage(): React.JSX.Element {
               className="hidden"
             />
 
-            {/* Error Message */}
-            {attachmentError && (
-              <p className="mt-2 text-sm text-error">{attachmentError}</p>
-            )}
+            {attachmentError && <p className="mt-2 text-sm text-error">{attachmentError}</p>}
 
-            {/* Attachments Preview */}
             {attachments.length > 0 && (
               <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                 {attachments.map((attachment) => (
-                  <div
+                  <AttachmentPreview
                     key={attachment.id}
-                    className={cn(
-                      "relative group rounded-xl overflow-hidden",
-                      "bg-background",
-                      "shadow-[2px_2px_4px_#d1d5db,-2px_-2px_4px_#ffffff]"
-                    )}
-                  >
-                    {attachment.type === "image" && attachment.preview ? (
-                      <div className="aspect-square">
-                        <img
-                          src={attachment.preview}
-                          alt={attachment.file.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    ) : (
-                      <div className="aspect-square flex flex-col items-center justify-center p-3">
-                        <svg
-                          className="w-8 h-8 text-primary mb-2"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={2}
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d={getFileIcon(attachment.type)}
-                          />
-                        </svg>
-                        <p className="text-xs text-text-primary text-center truncate w-full px-1">
-                          {attachment.file.name.split(".").pop()?.toUpperCase()}
-                        </p>
-                      </div>
-                    )}
-
-                    {/* File info overlay */}
-                    <div className="absolute inset-x-0 bottom-0 bg-black/60 p-2">
-                      <p className="text-xs text-white truncate">{attachment.file.name}</p>
-                      <p className="text-xs text-white/70">{formatFileSize(attachment.file.size)}</p>
-                    </div>
-
-                    {/* Remove button */}
-                    <button
-                      type="button"
-                      onClick={() => removeAttachment(attachment.id)}
-                      className={cn(
-                        "absolute top-2 right-2",
-                        "w-6 h-6 rounded-full",
-                        "bg-error text-white",
-                        "flex items-center justify-center",
-                        "opacity-0 group-hover:opacity-100",
-                        "transition-opacity duration-200",
-                        "cursor-pointer"
-                      )}
-                    >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  </div>
+                    attachment={attachment}
+                    onRemove={() => removeAttachment(attachment.id)}
+                  />
                 ))}
               </div>
             )}
@@ -520,9 +476,8 @@ export default function CreateOfferPage(): React.JSX.Element {
             <p className="mt-2 text-xs text-text-secondary">
               {attachments.length} / {MAX_ATTACHMENTS} files attached
             </p>
-          </div>
+          </FormField>
 
-          {/* Submit Buttons */}
           <div className="flex items-center justify-end gap-4 pt-4">
             <Link
               href="/app/client/dashboard"
@@ -550,21 +505,7 @@ export default function CreateOfferPage(): React.JSX.Element {
             >
               {isLoading ? (
                 <span className="flex items-center gap-2">
-                  <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
+                  <LoadingSpinner />
                   Publishing...
                 </span>
               ) : (
