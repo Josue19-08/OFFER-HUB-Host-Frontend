@@ -84,8 +84,8 @@ function LoginContent() {
 
     login(mockUser);
     setIsLoading(false);
-    // Redirect to intended destination or default
-    router.push(redirectPath || "/app/dashboard");
+    // Use window.location for full page navigation so middleware can read the cookie
+    window.location.href = redirectPath || "/app/dashboard";
   };
 
   return (

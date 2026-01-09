@@ -14,8 +14,10 @@ export function middleware(request: NextRequest) {
 
   if (authStorage?.value) {
     try {
-      const parsed = JSON.parse(authStorage.value);
-      isAuthenticated = parsed.state?.isAuthenticated ?? false;
+      const decoded = decodeURIComponent(authStorage.value);
+      const parsed = JSON.parse(decoded);
+      // Zustand persist stores state in "state" property
+      isAuthenticated = parsed.state?.isAuthenticated === true;
     } catch {
       isAuthenticated = false;
     }

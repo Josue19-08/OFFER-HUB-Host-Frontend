@@ -1,9 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { Logo } from "@/components/ui";
+
+type UserMode = "freelancer" | "client";
 
 interface NavItem {
   href: string;
@@ -66,6 +69,7 @@ interface AppSidebarProps {
 
 export function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
   const pathname = usePathname();
+  const [mode, setMode] = useState<UserMode>("freelancer");
 
   const isActiveLink = (href: string) => {
     return pathname === href || pathname.startsWith(href + "/");
@@ -118,21 +122,40 @@ export function AppSidebar({ isOpen, onClose }: AppSidebarProps) {
           ))}
         </nav>
 
-        {/* Mode Selector Placeholder */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border-light">
+        {/* Mode Toggle */}
+        <div className="absolute bottom-0 left-0 right-0 p-4">
           <div
             className={cn(
-              "flex items-center gap-3 px-4 py-3 rounded-xl",
-              "bg-white",
+              "p-3 rounded-2xl",
+              "bg-background",
               "shadow-[inset_2px_2px_4px_#d1d5db,inset_-2px_-2px_4px_#ffffff]"
             )}
           >
-            <svg className="w-5 h-5 text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
-            </svg>
-            <div className="flex-1">
-              <p className="text-xs text-text-secondary">Current Mode</p>
-              <p className="text-sm font-medium text-text-primary">Freelancer</p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setMode("freelancer")}
+                className={cn(
+                  "flex-1 py-2 px-3 rounded-xl text-sm font-medium",
+                  "transition-all duration-200 cursor-pointer",
+                  mode === "freelancer"
+                    ? "bg-primary text-white shadow-[2px_2px_4px_#d1d5db,-2px_-2px_4px_#ffffff]"
+                    : "text-text-secondary hover:text-text-primary"
+                )}
+              >
+                Freelancer
+              </button>
+              <button
+                onClick={() => setMode("client")}
+                className={cn(
+                  "flex-1 py-2 px-3 rounded-xl text-sm font-medium",
+                  "transition-all duration-200 cursor-pointer",
+                  mode === "client"
+                    ? "bg-primary text-white shadow-[2px_2px_4px_#d1d5db,-2px_-2px_4px_#ffffff]"
+                    : "text-text-secondary hover:text-text-primary"
+                )}
+              >
+                Client
+              </button>
             </div>
           </div>
         </div>
