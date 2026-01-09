@@ -19,12 +19,12 @@ export function AuthLayout({ children }: AuthLayoutProps) {
       </header>
 
       {/* Wave Background */}
-      <div className="absolute inset-0 pointer-events-none">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <svg
-          className="absolute bottom-0 left-0 right-0 w-full h-auto"
+          className="absolute bottom-0 h-auto"
           viewBox="0 0 1440 400"
           preserveAspectRatio="none"
-          style={{ minHeight: "45vh" }}
+          style={{ minHeight: "45vh", left: "-50px", right: "-50px", width: "calc(100% + 100px)" }}
         >
           {/* Wave 1 - Lightest, back */}
           <path
