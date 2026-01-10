@@ -9,8 +9,10 @@ import {
   NEUMORPHIC_CARD,
   NEUMORPHIC_INPUT,
   ICON_BUTTON,
+  INPUT_ERROR_STYLES,
+  PRIMARY_BUTTON,
 } from "@/lib/styles";
-import { Icon, ICON_PATHS } from "@/components/ui/Icon";
+import { Icon, ICON_PATHS, LoadingSpinner } from "@/components/ui/Icon";
 
 interface Attachment {
   id: string;
@@ -47,8 +49,6 @@ const CATEGORIES = [
   { value: "data", label: "Data & Analytics" },
   { value: "other", label: "Other" },
 ];
-
-const INPUT_ERROR_STYLES = "ring-2 ring-error/50";
 
 const INITIAL_FORM_DATA: OfferFormData = {
   title: "",
@@ -148,34 +148,13 @@ function formatFileSize(bytes: number): string {
   return (bytes / (1024 * 1024)).toFixed(1) + " MB";
 }
 
-function LoadingSpinner(): React.JSX.Element {
-  return (
-    <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-      <circle
-        className="opacity-25"
-        cx="12"
-        cy="12"
-        r="10"
-        stroke="currentColor"
-        strokeWidth="4"
-      />
-      <path
-        className="opacity-75"
-        fill="currentColor"
-        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-      />
-    </svg>
-  );
-}
-
 interface AttachmentPreviewProps {
   attachment: Attachment;
   onRemove: () => void;
 }
 
 function AttachmentPreview({ attachment, onRemove }: AttachmentPreviewProps): React.JSX.Element {
-  const iconPath =
-    attachment.type === "image" ? ICON_PATHS.image : ICON_PATHS.document;
+  const iconPath = attachment.type === "image" ? ICON_PATHS.image : ICON_PATHS.document;
 
   return (
     <div
@@ -236,7 +215,6 @@ export default function CreateOfferPage(): React.JSX.Element {
   const [attachmentError, setAttachmentError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Set client mode only on initial mount, not on every mode change
   useEffect(() => {
     setMode("client");
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -335,9 +313,7 @@ export default function CreateOfferPage(): React.JSX.Element {
         </Link>
         <div>
           <h1 className="text-2xl font-bold text-text-primary">Create New Offer</h1>
-          <p className="text-text-secondary mt-1">
-            Post a job opportunity for freelancers
-          </p>
+          <p className="text-text-secondary mt-1">Post a job opportunity for freelancers</p>
         </div>
       </div>
 
@@ -490,19 +466,7 @@ export default function CreateOfferPage(): React.JSX.Element {
             >
               Cancel
             </Link>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={cn(
-                "px-6 py-3 rounded-xl font-medium",
-                "bg-primary text-white",
-                "shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]",
-                "hover:bg-primary-hover hover:shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff] hover:scale-[1.02]",
-                "active:shadow-[inset_4px_4px_8px_rgba(0,0,0,0.2)] active:scale-[0.98]",
-                "disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100",
-                "transition-all duration-200 cursor-pointer"
-              )}
-            >
+            <button type="submit" disabled={isLoading} className={PRIMARY_BUTTON}>
               {isLoading ? (
                 <span className="flex items-center gap-2">
                   <LoadingSpinner />

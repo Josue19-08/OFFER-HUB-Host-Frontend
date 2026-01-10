@@ -3,6 +3,13 @@
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/cn";
 import { useAuthStore } from "@/stores/auth-store";
+import { Icon, ICON_PATHS, LoadingSpinner } from "@/components/ui/Icon";
+import {
+  NEUMORPHIC_CARD,
+  NEUMORPHIC_INPUT,
+  INPUT_ERROR_STYLES,
+  PRIMARY_BUTTON,
+} from "@/lib/styles";
 
 interface ProfileFormData {
   firstName: string;
@@ -25,17 +32,6 @@ interface FormErrors {
   bio?: string;
   phone?: string;
 }
-
-const INPUT_BASE_STYLES = cn(
-  "w-full px-4 py-3 rounded-xl",
-  "bg-background",
-  "shadow-[inset_2px_2px_4px_#d1d5db,inset_-2px_-2px_4px_#ffffff]",
-  "text-text-primary placeholder-text-secondary",
-  "outline-none focus:ring-2 focus:ring-primary/20",
-  "transition-all duration-200"
-);
-
-const INPUT_ERROR_STYLES = "ring-2 ring-error/50";
 
 interface FormInputProps {
   label: string;
@@ -60,15 +56,13 @@ function FormInput({
 }: FormInputProps): React.JSX.Element {
   return (
     <div className={className}>
-      <label className="block text-sm font-medium text-text-primary mb-2">
-        {label}
-      </label>
+      <label className="block text-sm font-medium text-text-primary mb-2">{label}</label>
       <input
         type={type}
         name={name}
         value={value}
         onChange={onChange}
-        className={cn(INPUT_BASE_STYLES, error && INPUT_ERROR_STYLES)}
+        className={cn(NEUMORPHIC_INPUT, error && INPUT_ERROR_STYLES)}
         placeholder={placeholder}
       />
       {error && <p className="mt-1 text-sm text-error">{error}</p>}
@@ -128,6 +122,21 @@ function validateProfileForm(formData: ProfileFormData): FormErrors {
   return errors;
 }
 
+const PHOTO_BUTTON_STYLES = cn(
+  "px-4 py-2 text-sm font-medium rounded-xl",
+  "bg-background text-text-primary",
+  "shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]",
+  "hover:shadow-[2px_2px_4px_#d1d5db,-2px_-2px_4px_#ffffff]",
+  "active:shadow-[inset_2px_2px_4px_#d1d5db,inset_-2px_-2px_4px_#ffffff]",
+  "transition-all duration-200 cursor-pointer"
+);
+
+const AVATAR_STYLES = cn(
+  "w-24 h-24 rounded-full flex items-center justify-center",
+  "bg-primary text-white text-3xl font-bold",
+  "shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]"
+);
+
 export default function ProfilePage(): React.JSX.Element {
   const user = useAuthStore((state) => state.user);
   const [isLoading, setIsLoading] = useState(false);
@@ -151,9 +160,7 @@ export default function ProfilePage(): React.JSX.Element {
     }
   }, [user]);
 
-  function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ): void {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name as keyof FormErrors]) {
@@ -196,61 +203,23 @@ export default function ProfilePage(): React.JSX.Element {
           )}
         >
           <div className="flex items-center gap-2">
-            <svg
-              className="w-5 h-5 text-success flex-shrink-0"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <p className="text-sm text-success font-medium">
-              Profile updated successfully!
-            </p>
+            <Icon path={ICON_PATHS.check} size="md" className="text-success flex-shrink-0" />
+            <p className="text-sm text-success font-medium">Profile updated successfully!</p>
           </div>
         </div>
       )}
 
-      <div
-        className={cn(
-          "p-6 rounded-2xl",
-          "bg-white",
-          "shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff]"
-        )}
-      >
+      <div className={NEUMORPHIC_CARD}>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="flex items-center gap-6">
-            <div
-              className={cn(
-                "w-24 h-24 rounded-full flex items-center justify-center",
-                "bg-primary text-white text-3xl font-bold",
-                "shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]"
-              )}
-            >
+            <div className={AVATAR_STYLES}>
               {formData.firstName.charAt(0).toUpperCase()}
               {formData.lastName.charAt(0).toUpperCase()}
             </div>
             <div>
               <h3 className="font-medium text-text-primary">Profile Photo</h3>
-              <p className="text-sm text-text-secondary mb-2">
-                JPG, PNG or GIF. Max size 2MB.
-              </p>
-              <button
-                type="button"
-                className={cn(
-                  "px-4 py-2 text-sm font-medium rounded-xl",
-                  "bg-background text-text-primary",
-                  "shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]",
-                  "hover:shadow-[2px_2px_4px_#d1d5db,-2px_-2px_4px_#ffffff]",
-                  "active:shadow-[inset_2px_2px_4px_#d1d5db,inset_-2px_-2px_4px_#ffffff]",
-                  "transition-all duration-200 cursor-pointer"
-                )}
-              >
+              <p className="text-sm text-text-secondary mb-2">JPG, PNG or GIF. Max size 2MB.</p>
+              <button type="button" className={PHOTO_BUTTON_STYLES}>
                 Change Photo
               </button>
             </div>
@@ -317,25 +286,17 @@ export default function ProfilePage(): React.JSX.Element {
             />
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-text-primary mb-2">
-                Bio
-              </label>
+              <label className="block text-sm font-medium text-text-primary mb-2">Bio</label>
               <textarea
                 name="bio"
                 value={formData.bio}
                 onChange={handleChange}
                 rows={4}
-                className={cn(
-                  INPUT_BASE_STYLES,
-                  "resize-none",
-                  errors.bio && INPUT_ERROR_STYLES
-                )}
+                className={cn(NEUMORPHIC_INPUT, "resize-none", errors.bio && INPUT_ERROR_STYLES)}
                 placeholder="Tell us about yourself..."
               />
               <div className="flex justify-between mt-1">
-                {errors.bio && (
-                  <p className="text-sm text-error">{errors.bio}</p>
-                )}
+                {errors.bio && <p className="text-sm text-error">{errors.bio}</p>}
                 <p className="text-xs text-text-secondary ml-auto">
                   {formData.bio.length}/{MAX_BIO_LENGTH}
                 </p>
@@ -344,36 +305,10 @@ export default function ProfilePage(): React.JSX.Element {
           </div>
 
           <div className="flex justify-end pt-4">
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={cn(
-                "px-6 py-3 rounded-xl font-medium",
-                "bg-primary text-white",
-                "shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]",
-                "hover:bg-primary-hover hover:shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff] hover:scale-[1.02]",
-                "active:shadow-[inset_4px_4px_8px_rgba(0,0,0,0.2)] active:scale-[0.98]",
-                "disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100",
-                "transition-all duration-200 cursor-pointer"
-              )}
-            >
+            <button type="submit" disabled={isLoading} className={PRIMARY_BUTTON}>
               {isLoading ? (
                 <span className="flex items-center gap-2">
-                  <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
+                  <LoadingSpinner />
                   Saving...
                 </span>
               ) : (
