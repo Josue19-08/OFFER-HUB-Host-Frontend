@@ -60,31 +60,38 @@ export default function ChatThreadPage() {
     setMessages((prev) => [...prev, newMessage]);
   }
 
+  // Group messages by sender for avatar display
+  function shouldShowAvatar(index: number): boolean {
+    if (index === messages.length - 1) return true;
+    const currentMessage = messages[index];
+    const nextMessage = messages[index + 1];
+    return currentMessage.senderId !== nextMessage.senderId;
+  }
+
   if (!chatThread) {
     return (
-      <div className="flex h-full items-center justify-center">
+      <div className="flex h-full items-center justify-center rounded-2xl bg-secondary shadow-[6px_6px_12px_#0a0f1a,-6px_-6px_12px_#1e2a4a]">
         <div className="text-center">
           <div
             className={cn(
               "w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center",
-              "bg-background",
-              "shadow-[inset_4px_4px_8px_#d1d5db,inset_-4px_-4px_8px_#ffffff]"
+              "bg-gradient-to-br from-primary/20 to-accent/20",
+              "ring-4 ring-primary/10"
             )}
           >
-            <Icon path={ICON_PATHS.chat} size="xl" className="text-text-secondary" />
+            <Icon path={ICON_PATHS.chat} size="xl" className="text-primary" />
           </div>
-          <h2 className="text-lg font-bold text-text-primary mb-2">
+          <h2 className="text-lg font-bold text-white mb-2">
             Conversation not found
           </h2>
           <button
             type="button"
             onClick={() => router.push("/app/chat")}
             className={cn(
-              "px-4 py-2 rounded-xl cursor-pointer",
+              "px-5 py-2.5 rounded-xl cursor-pointer",
               "bg-primary text-white text-sm font-medium",
-              "shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]",
-              "hover:shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff]",
-              "transition-all duration-200"
+              "hover:bg-primary-hover transition-colors",
+              "shadow-[0_4px_12px_rgba(20,154,155,0.3)]"
             )}
           >
             Back to Messages
@@ -95,11 +102,11 @@ export default function ChatThreadPage() {
   }
 
   return (
-    <div className="flex h-full gap-4 lg:gap-6">
+    <div className="flex h-full gap-4">
       {/* Mobile Overlay */}
       {showConversations && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm"
           onClick={() => setShowConversations(false)}
         />
       )}
@@ -107,14 +114,14 @@ export default function ChatThreadPage() {
       {/* Conversation List */}
       <div
         className={cn(
-          "flex-shrink-0 bg-white rounded-2xl overflow-hidden",
-          "shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff]",
+          "flex-shrink-0 rounded-2xl overflow-hidden",
+          "shadow-[6px_6px_12px_#0a0f1a,-6px_-6px_12px_#1e2a4a]",
           "transition-all duration-300 ease-in-out",
           // Desktop behavior
           "hidden lg:block",
-          conversationsCollapsed ? "lg:w-16" : "lg:w-80",
+          conversationsCollapsed ? "lg:w-[72px]" : "lg:w-[340px]",
           // Mobile behavior (overlay)
-          showConversations && "fixed inset-y-0 left-0 z-50 w-80 m-0 rounded-none block lg:relative lg:rounded-2xl"
+          showConversations && "fixed inset-y-0 left-0 z-50 w-[340px] m-0 rounded-none block lg:relative lg:rounded-2xl"
         )}
       >
         <ConversationList
@@ -127,8 +134,9 @@ export default function ChatThreadPage() {
       <div
         className={cn(
           "flex-1 flex flex-col min-w-0",
-          "bg-white rounded-2xl overflow-hidden",
-          "shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff]"
+          "rounded-2xl overflow-hidden",
+          "bg-secondary",
+          "shadow-[6px_6px_12px_#0a0f1a,-6px_-6px_12px_#1e2a4a]"
         )}
       >
         {/* Chat Header */}
@@ -142,16 +150,25 @@ export default function ChatThreadPage() {
         {/* Messages Area */}
         <div
           className={cn(
-            "flex-1 overflow-y-auto p-4",
-            "bg-background"
+            "flex-1 overflow-y-auto p-6",
+            "bg-gradient-to-b from-secondary via-secondary to-secondary/95"
           )}
         >
+          {/* Date separator */}
+          <div className="flex items-center justify-center mb-6">
+            <span className="px-3 py-1 text-xs text-text-secondary bg-white/5 rounded-full border border-white/10">
+              Today
+            </span>
+          </div>
+
           <div className="space-y-4">
-            {messages.map((message) => (
+            {messages.map((message, index) => (
               <MessageBubble
                 key={message.id}
                 message={message}
                 isOwn={message.senderId === "current"}
+                showAvatar={shouldShowAvatar(index)}
+                participantAvatar={chatThread.participant.avatar}
               />
             ))}
             <div ref={messagesEndRef} />
@@ -166,11 +183,10 @@ export default function ChatThreadPage() {
       <div
         className={cn(
           "flex-shrink-0 rounded-2xl overflow-hidden",
-          "bg-white",
-          "shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff]",
+          "shadow-[6px_6px_12px_#0a0f1a,-6px_-6px_12px_#1e2a4a]",
           "transition-all duration-300 ease-in-out",
           "hidden xl:block",
-          showInfo ? "xl:w-72" : "xl:w-0 xl:opacity-0"
+          showInfo ? "xl:w-[280px]" : "xl:w-0 xl:opacity-0"
         )}
       >
         <ChatInfoPanel

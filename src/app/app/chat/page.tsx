@@ -16,14 +16,13 @@ export default function ChatPage() {
   }, [setCollapsed]);
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-full gap-4">
       {/* Conversation List */}
       <div
         className={cn(
-          "w-full sm:w-80 lg:w-96 flex-shrink-0",
-          "bg-white rounded-2xl",
-          "shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff]",
-          "overflow-hidden"
+          "w-full sm:w-80 lg:w-[340px] flex-shrink-0",
+          "rounded-2xl overflow-hidden",
+          "shadow-[6px_6px_12px_#0a0f1a,-6px_-6px_12px_#1e2a4a]"
         )}
       >
         <ConversationList conversations={MOCK_CONVERSATIONS} />
@@ -33,24 +32,24 @@ export default function ChatPage() {
       <div
         className={cn(
           "hidden sm:flex flex-1 flex-col items-center justify-center",
-          "ml-6 rounded-2xl",
-          "bg-white",
-          "shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff]"
+          "rounded-2xl",
+          "bg-secondary",
+          "shadow-[6px_6px_12px_#0a0f1a,-6px_-6px_12px_#1e2a4a]"
         )}
       >
         <div
           className={cn(
             "w-24 h-24 mb-6 rounded-full flex items-center justify-center",
-            "bg-background",
-            "shadow-[inset_4px_4px_8px_#d1d5db,inset_-4px_-4px_8px_#ffffff]"
+            "bg-gradient-to-br from-primary/20 to-accent/20",
+            "ring-4 ring-primary/10"
           )}
         >
-          <Icon path={ICON_PATHS.chat} size="xl" className="text-text-secondary" />
+          <Icon path={ICON_PATHS.chat} size="xl" className="text-primary" />
         </div>
-        <h2 className="text-xl font-bold text-text-primary mb-2">
+        <h2 className="text-xl font-bold text-white mb-2">
           Your Messages
         </h2>
-        <p className="text-text-secondary text-center max-w-xs">
+        <p className="text-text-secondary text-center max-w-xs text-sm">
           Select a conversation from the list to start messaging
         </p>
       </div>
