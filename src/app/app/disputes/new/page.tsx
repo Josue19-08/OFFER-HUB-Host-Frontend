@@ -87,9 +87,9 @@ function NewDisputeForm(): React.JSX.Element {
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 mb-4 flex-shrink-0">
         <Link href="/app/disputes" className={ICON_BUTTON}>
           <Icon path={ICON_PATHS.chevronLeft} size="md" className="text-text-primary" />
         </Link>
@@ -101,8 +101,15 @@ function NewDisputeForm(): React.JSX.Element {
         </div>
       </div>
 
-      {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Form - Scrollable container */}
+      <div
+        className={cn(
+          "flex-1 min-h-0 overflow-y-auto rounded-2xl",
+          "bg-white p-4 sm:p-6",
+          "shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff]"
+        )}
+      >
+        <form onSubmit={handleSubmit} className="max-w-3xl mx-auto space-y-6">
         {/* Select Offer */}
         <div className={NEUMORPHIC_CARD}>
           <h2 className="text-lg font-semibold text-text-primary mb-4">
@@ -316,6 +323,7 @@ function NewDisputeForm(): React.JSX.Element {
           </button>
         </div>
       </form>
+      </div>
     </div>
   );
 }

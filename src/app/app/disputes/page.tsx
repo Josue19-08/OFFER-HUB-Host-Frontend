@@ -134,12 +134,12 @@ function DisputesContent(): React.JSX.Element {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col h-full">
       {/* Success Message */}
       {showSuccessMessage && (
         <div
           className={cn(
-            "flex items-center gap-3 p-4 rounded-xl",
+            "flex items-center gap-3 p-4 rounded-xl mb-4 flex-shrink-0",
             "bg-success/10 border border-success/20"
           )}
         >
@@ -157,7 +157,7 @@ function DisputesContent(): React.JSX.Element {
       )}
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 flex-shrink-0">
         <div>
           <h1 className="text-2xl font-bold text-text-primary">Disputes</h1>
           <p className="text-text-secondary mt-1">
@@ -180,7 +180,7 @@ function DisputesContent(): React.JSX.Element {
       </div>
 
       {/* Filter Tabs */}
-      <div className={NEUMORPHIC_CARD}>
+      <div className={cn(NEUMORPHIC_CARD, "mb-4 flex-shrink-0")}>
         <div className="flex flex-wrap gap-2">
           {(["all", "open", "under_review", "resolved", "closed"] as const).map((status) => (
             <button
@@ -201,25 +201,35 @@ function DisputesContent(): React.JSX.Element {
         </div>
       </div>
 
-      {/* Disputes List */}
-      {filteredDisputes.length === 0 ? (
-        <EmptyState
-          icon={ICON_PATHS.flag}
-          message={
-            filter === "all"
-              ? "No disputes found"
-              : `No ${filter.replace("_", " ")} disputes`
-          }
-          linkHref="/app/disputes/new"
-          linkText="Open a dispute"
-        />
-      ) : (
-        <div className="space-y-4">
-          {filteredDisputes.map((dispute) => (
-            <DisputeCard key={dispute.id} dispute={dispute} />
-          ))}
-        </div>
-      )}
+      {/* Disputes List - Scrollable container */}
+      <div
+        className={cn(
+          "flex-1 min-h-0 overflow-y-auto rounded-2xl",
+          "bg-white p-4",
+          "shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff]"
+        )}
+      >
+        {filteredDisputes.length === 0 ? (
+          <div className="flex items-center justify-center h-full">
+            <EmptyState
+              icon={ICON_PATHS.flag}
+              message={
+                filter === "all"
+                  ? "No disputes found"
+                  : `No ${filter.replace("_", " ")} disputes`
+              }
+              linkHref="/app/disputes/new"
+              linkText="Open a dispute"
+            />
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {filteredDisputes.map((dispute) => (
+              <DisputeCard key={dispute.id} dispute={dispute} />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
