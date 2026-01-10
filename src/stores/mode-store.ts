@@ -66,15 +66,16 @@ const FREELANCER_ITEMS: NavigationItem[] = [
   },
 ];
 
+const CLIENT_DASHBOARD_ITEM: NavigationItem = {
+  href: "/app/client/dashboard",
+  label: "Client Dashboard",
+  icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6",
+};
+
 const CLIENT_ITEMS: NavigationItem[] = [
   {
-    href: "/app/my-projects",
-    label: "My Projects",
-    icon: "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10",
-  },
-  {
-    href: "/app/post-project",
-    label: "Post Project",
+    href: "/app/client/offers/new",
+    label: "Create Offer",
     icon: "M12 4v16m8-8H4",
   },
   {
@@ -90,6 +91,8 @@ const CLIENT_ITEMS: NavigationItem[] = [
 ];
 
 export function getNavigationItems(mode: UserMode): NavigationItem[] {
-  const modeSpecificItems = mode === "freelancer" ? FREELANCER_ITEMS : CLIENT_ITEMS;
-  return [DASHBOARD_ITEM, ...modeSpecificItems, MESSAGES_ITEM, PROFILE_ITEM];
+  if (mode === "client") {
+    return [CLIENT_DASHBOARD_ITEM, ...CLIENT_ITEMS, MESSAGES_ITEM, PROFILE_ITEM];
+  }
+  return [DASHBOARD_ITEM, ...FREELANCER_ITEMS, MESSAGES_ITEM, PROFILE_ITEM];
 }

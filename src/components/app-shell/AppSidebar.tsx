@@ -1,8 +1,10 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
+import { Icon } from "@/components/ui/Icon";
 import { useModeStore, getNavigationItems, type UserMode } from "@/stores/mode-store";
 
 interface AppSidebarProps {
@@ -10,21 +12,23 @@ interface AppSidebarProps {
   onClose: () => void;
 }
 
-const MODE_TOGGLE_BASE_STYLES = cn(
+const MODE_TOGGLE_BASE = cn(
   "flex-1 py-2 px-3 rounded-lg text-sm font-medium",
   "transition-all duration-200 cursor-pointer"
 );
 
-const MODE_TOGGLE_ACTIVE_STYLES = "bg-primary text-white shadow-[2px_2px_4px_#d1d5db,-2px_-2px_4px_#ffffff]";
-const MODE_TOGGLE_INACTIVE_STYLES = "text-text-secondary hover:text-text-primary";
+const MODE_TOGGLE_ACTIVE = "bg-primary text-white shadow-[2px_2px_4px_#d1d5db,-2px_-2px_4px_#ffffff]";
+const MODE_TOGGLE_INACTIVE = "text-text-secondary hover:text-text-primary";
 
-const NAV_LINK_BASE_STYLES = cn(
+const NAV_LINK_BASE = cn(
   "flex items-center gap-3 px-4 py-3 rounded-xl",
   "transition-all duration-200"
 );
 
-const NAV_LINK_ACTIVE_STYLES = "bg-primary text-white shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]";
-const NAV_LINK_INACTIVE_STYLES = "text-text-secondary hover:bg-background hover:text-text-primary hover:shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]";
+const NAV_LINK_ACTIVE =
+  "bg-primary text-white shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]";
+const NAV_LINK_INACTIVE =
+  "text-text-secondary hover:bg-background hover:text-text-primary hover:shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]";
 
 const MODE_LABELS: Record<UserMode, string> = {
   freelancer: "Finding work",
@@ -32,20 +36,30 @@ const MODE_LABELS: Record<UserMode, string> = {
 };
 
 function getModeToggleStyles(isActive: boolean): string {
-  return cn(MODE_TOGGLE_BASE_STYLES, isActive ? MODE_TOGGLE_ACTIVE_STYLES : MODE_TOGGLE_INACTIVE_STYLES);
+  return cn(MODE_TOGGLE_BASE, isActive ? MODE_TOGGLE_ACTIVE : MODE_TOGGLE_INACTIVE);
 }
 
 function getNavLinkStyles(isActive: boolean): string {
-  return cn(NAV_LINK_BASE_STYLES, isActive ? NAV_LINK_ACTIVE_STYLES : NAV_LINK_INACTIVE_STYLES);
+  return cn(NAV_LINK_BASE, isActive ? NAV_LINK_ACTIVE : NAV_LINK_INACTIVE);
 }
 
-export function AppSidebar({ isOpen: _isOpen, onClose: _onClose }: AppSidebarProps): React.JSX.Element {
+export function AppSidebar(_props: AppSidebarProps): React.JSX.Element {
   const pathname = usePathname();
   const { mode, setMode } = useModeStore();
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
   const navItems = getNavigationItems(mode);
 
   function isActiveLink(href: string): boolean {
     return pathname === href || pathname.startsWith(href + "/");
+  }
+
+  function handleModeChange(newMode: UserMode): void {
+    setMode(newMode);
   }
 
   return (
@@ -68,14 +82,18 @@ export function AppSidebar({ isOpen: _isOpen, onClose: _onClose }: AppSidebarPro
         >
           <div className="flex items-center gap-1">
             <button
-              onClick={() => setMode("freelancer")}
-              className={getModeToggleStyles(mode === "freelancer")}
+              type="button"
+              onClick={() => handleModeChange("freelancer")}
+              className={getModeToggleStyles(hydrated && mode === "freelancer")}
+              disabled={!hydrated}
             >
               Freelancer
             </button>
             <button
-              onClick={() => setMode("client")}
-              className={getModeToggleStyles(mode === "client")}
+              type="button"
+              onClick={() => handleModeChange("client")}
+              className={getModeToggleStyles(hydrated && mode === "client")}
+              disabled={!hydrated}
             >
               Client
             </button>
@@ -102,19 +120,7 @@ export function AppSidebar({ isOpen: _isOpen, onClose: _onClose }: AppSidebarPro
             href={item.href}
             className={getNavLinkStyles(isActiveLink(item.href))}
           >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d={item.icon}
-              />
-            </svg>
+            <Icon path={item.icon} size="md" />
             <span className="font-medium">{item.label}</span>
           </Link>
         ))}
