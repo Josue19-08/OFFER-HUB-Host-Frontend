@@ -113,17 +113,16 @@ function DisputesContent(): React.JSX.Element {
 
   useEffect(() => {
     setMode("client");
-    // Show success message if redirected after creating dispute
     if (searchParams.get("created") === "true") {
       setShowSuccessMessage(true);
       setTimeout(() => setShowSuccessMessage(false), 5000);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [setMode, searchParams]);
 
-  const filteredDisputes = MOCK_DISPUTES.filter((dispute) =>
-    filter === "all" ? true : dispute.status === filter
-  );
+  const filteredDisputes =
+    filter === "all"
+      ? MOCK_DISPUTES
+      : MOCK_DISPUTES.filter((dispute) => dispute.status === filter);
 
   const statusCounts = {
     all: MOCK_DISPUTES.length,
@@ -135,7 +134,6 @@ function DisputesContent(): React.JSX.Element {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Success Message */}
       {showSuccessMessage && (
         <div
           className={cn(
@@ -156,7 +154,6 @@ function DisputesContent(): React.JSX.Element {
         </div>
       )}
 
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 flex-shrink-0">
         <div>
           <h1 className="text-2xl font-bold text-text-primary">Disputes</h1>
@@ -179,7 +176,6 @@ function DisputesContent(): React.JSX.Element {
         </Link>
       </div>
 
-      {/* Filter Tabs */}
       <div className={cn(NEUMORPHIC_CARD, "mb-4 flex-shrink-0")}>
         <div className="flex flex-wrap gap-2">
           {(["all", "open", "under_review", "resolved", "closed"] as const).map((status) => (
@@ -201,7 +197,6 @@ function DisputesContent(): React.JSX.Element {
         </div>
       </div>
 
-      {/* Disputes List - Scrollable container */}
       <div
         className={cn(
           "flex-1 min-h-0 overflow-y-auto rounded-2xl",
