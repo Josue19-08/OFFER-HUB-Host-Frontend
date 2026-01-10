@@ -18,26 +18,26 @@ const FILE_ICONS: Record<SharedFile["type"], string> = {
 };
 
 const FILE_COLORS: Record<SharedFile["type"], string> = {
-  document: "text-blue-400",
-  image: "text-green-400",
-  video: "text-purple-400",
-  other: "text-orange-400",
+  document: "text-blue-500",
+  image: "text-green-500",
+  video: "text-purple-500",
+  other: "text-orange-500",
 };
 
 export function ChatInfoPanel({ participant, sharedFiles, onClose }: ChatInfoPanelProps) {
   return (
-    <div className="flex flex-col h-full bg-secondary">
+    <div className="flex flex-col h-full bg-white">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-4 border-b border-white/10">
-        <h3 className="font-semibold text-white">Profile</h3>
+      <div className="flex items-center justify-between px-4 py-4 border-b border-border-light">
+        <h3 className="font-semibold text-text-primary">Profile</h3>
         {onClose && (
           <button
             type="button"
             onClick={onClose}
             className={cn(
               "p-1.5 rounded-lg cursor-pointer",
-              "text-text-secondary hover:text-white",
-              "hover:bg-white/10",
+              "text-text-secondary hover:text-text-primary",
+              "hover:bg-background",
               "transition-all duration-200"
             )}
           >
@@ -47,19 +47,19 @@ export function ChatInfoPanel({ participant, sharedFiles, onClose }: ChatInfoPan
       </div>
 
       {/* Profile Section */}
-      <div className="p-6 text-center border-b border-white/10">
+      <div className="p-6 text-center border-b border-border-light">
         <div
           className={cn(
             "w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center",
-            "bg-gradient-to-br from-primary/30 to-accent/30",
-            "ring-4 ring-primary/20"
+            "bg-gradient-to-br from-primary/20 to-accent/20",
+            "shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]"
           )}
         >
-          <span className="text-2xl font-bold text-white">
+          <span className="text-2xl font-bold text-text-primary">
             {participant.avatar}
           </span>
         </div>
-        <h3 className="text-lg font-bold text-white mb-1">
+        <h3 className="text-lg font-bold text-text-primary mb-1">
           {participant.name}
         </h3>
         <p className="text-sm text-text-secondary mb-3">{participant.title}</p>
@@ -67,14 +67,14 @@ export function ChatInfoPanel({ participant, sharedFiles, onClose }: ChatInfoPan
           className={cn(
             "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium",
             participant.isOnline
-              ? "bg-green-500/20 text-green-400 border border-green-500/30"
-              : "bg-white/5 text-text-secondary border border-white/10"
+              ? "bg-green-100 text-green-700"
+              : "bg-gray-100 text-gray-600"
           )}
         >
           <span
             className={cn(
               "w-2 h-2 rounded-full",
-              participant.isOnline ? "bg-green-400" : "bg-gray-500"
+              participant.isOnline ? "bg-green-500" : "bg-gray-400"
             )}
           />
           {participant.isOnline ? "Online" : "Offline"}
@@ -82,19 +82,21 @@ export function ChatInfoPanel({ participant, sharedFiles, onClose }: ChatInfoPan
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-2 gap-3 p-4 border-b border-white/10">
+      <div className="grid grid-cols-2 gap-3 p-4 border-b border-border-light">
         <div className={cn(
           "p-3 rounded-xl text-center",
-          "bg-white/5 border border-white/10"
+          "bg-background",
+          "shadow-[inset_2px_2px_4px_#d1d5db,inset_-2px_-2px_4px_#ffffff]"
         )}>
-          <p className="text-lg font-bold text-white">126</p>
+          <p className="text-lg font-bold text-text-primary">126</p>
           <p className="text-[10px] text-text-secondary uppercase tracking-wider">Messages</p>
         </div>
         <div className={cn(
           "p-3 rounded-xl text-center",
-          "bg-white/5 border border-white/10"
+          "bg-background",
+          "shadow-[inset_2px_2px_4px_#d1d5db,inset_-2px_-2px_4px_#ffffff]"
         )}>
-          <p className="text-lg font-bold text-white">24</p>
+          <p className="text-lg font-bold text-text-primary">24</p>
           <p className="text-[10px] text-text-secondary uppercase tracking-wider">Files</p>
         </div>
       </div>
@@ -111,8 +113,9 @@ export function ChatInfoPanel({ participant, sharedFiles, onClose }: ChatInfoPan
               type="button"
               className={cn(
                 "w-full flex items-center gap-3 p-3 rounded-xl",
-                "bg-white/5 border border-white/10",
-                "hover:bg-white/10 hover:border-white/20",
+                "bg-background",
+                "shadow-[2px_2px_4px_#d1d5db,-2px_-2px_4px_#ffffff]",
+                "hover:shadow-[3px_3px_6px_#d1d5db,-3px_-3px_6px_#ffffff]",
                 "transition-all duration-200 cursor-pointer",
                 "text-left group"
               )}
@@ -120,8 +123,8 @@ export function ChatInfoPanel({ participant, sharedFiles, onClose }: ChatInfoPan
               <div
                 className={cn(
                   "w-10 h-10 rounded-lg flex items-center justify-center",
-                  "bg-white/5 border border-white/10",
-                  "group-hover:border-primary/30"
+                  "bg-white",
+                  "shadow-[inset_1px_1px_2px_#d1d5db,inset_-1px_-1px_2px_#ffffff]"
                 )}
               >
                 <Icon
@@ -131,7 +134,7 @@ export function ChatInfoPanel({ participant, sharedFiles, onClose }: ChatInfoPan
                 />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">
+                <p className="text-sm font-medium text-text-primary truncate">
                   {file.name}
                 </p>
                 <p className="text-xs text-text-secondary">
@@ -149,14 +152,15 @@ export function ChatInfoPanel({ participant, sharedFiles, onClose }: ChatInfoPan
       </div>
 
       {/* Quick Actions */}
-      <div className="p-4 border-t border-white/10">
+      <div className="p-4 border-t border-border-light">
         <div className="grid grid-cols-3 gap-2">
           <button
             type="button"
             className={cn(
-              "flex flex-col items-center gap-1.5 p-3 rounded-xl",
-              "bg-white/5 border border-white/10 cursor-pointer",
-              "hover:bg-white/10 hover:border-primary/30",
+              "flex flex-col items-center gap-1.5 p-3 rounded-xl cursor-pointer",
+              "bg-background",
+              "shadow-[2px_2px_4px_#d1d5db,-2px_-2px_4px_#ffffff]",
+              "hover:shadow-[3px_3px_6px_#d1d5db,-3px_-3px_6px_#ffffff]",
               "transition-all duration-200"
             )}
           >
@@ -166,9 +170,10 @@ export function ChatInfoPanel({ participant, sharedFiles, onClose }: ChatInfoPan
           <button
             type="button"
             className={cn(
-              "flex flex-col items-center gap-1.5 p-3 rounded-xl",
-              "bg-white/5 border border-white/10 cursor-pointer",
-              "hover:bg-white/10 hover:border-primary/30",
+              "flex flex-col items-center gap-1.5 p-3 rounded-xl cursor-pointer",
+              "bg-background",
+              "shadow-[2px_2px_4px_#d1d5db,-2px_-2px_4px_#ffffff]",
+              "hover:shadow-[3px_3px_6px_#d1d5db,-3px_-3px_6px_#ffffff]",
               "transition-all duration-200"
             )}
           >
@@ -178,14 +183,15 @@ export function ChatInfoPanel({ participant, sharedFiles, onClose }: ChatInfoPan
           <button
             type="button"
             className={cn(
-              "flex flex-col items-center gap-1.5 p-3 rounded-xl",
-              "bg-white/5 border border-white/10 cursor-pointer",
-              "hover:bg-red-500/10 hover:border-red-500/30",
+              "flex flex-col items-center gap-1.5 p-3 rounded-xl cursor-pointer",
+              "bg-background",
+              "shadow-[2px_2px_4px_#d1d5db,-2px_-2px_4px_#ffffff]",
+              "hover:shadow-[3px_3px_6px_#d1d5db,-3px_-3px_6px_#ffffff]",
               "transition-all duration-200 group"
             )}
           >
-            <Icon path={ICON_PATHS.flag} size="md" className="text-red-400" />
-            <span className="text-[10px] text-text-secondary group-hover:text-red-400">Report</span>
+            <Icon path={ICON_PATHS.flag} size="md" className="text-red-500" />
+            <span className="text-[10px] text-text-secondary">Report</span>
           </button>
         </div>
       </div>

@@ -70,18 +70,18 @@ export default function ChatThreadPage() {
 
   if (!chatThread) {
     return (
-      <div className="flex h-full items-center justify-center rounded-2xl bg-secondary shadow-[6px_6px_12px_#0a0f1a,-6px_-6px_12px_#1e2a4a]">
+      <div className="flex h-[calc(100vh-theme(spacing.20))] lg:h-[calc(100vh-theme(spacing.24))] items-center justify-center bg-white rounded-2xl shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff]">
         <div className="text-center">
           <div
             className={cn(
               "w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center",
-              "bg-gradient-to-br from-primary/20 to-accent/20",
-              "ring-4 ring-primary/10"
+              "bg-background",
+              "shadow-[inset_4px_4px_8px_#d1d5db,inset_-4px_-4px_8px_#ffffff]"
             )}
           >
             <Icon path={ICON_PATHS.chat} size="xl" className="text-primary" />
           </div>
-          <h2 className="text-lg font-bold text-white mb-2">
+          <h2 className="text-lg font-bold text-text-primary mb-2">
             Conversation not found
           </h2>
           <button
@@ -90,8 +90,9 @@ export default function ChatThreadPage() {
             className={cn(
               "px-5 py-2.5 rounded-xl cursor-pointer",
               "bg-primary text-white text-sm font-medium",
-              "hover:bg-primary-hover transition-colors",
-              "shadow-[0_4px_12px_rgba(20,154,155,0.3)]"
+              "shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]",
+              "hover:shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff]",
+              "transition-all duration-200"
             )}
           >
             Back to Messages
@@ -102,11 +103,11 @@ export default function ChatThreadPage() {
   }
 
   return (
-    <div className="flex h-full gap-4">
+    <div className="flex h-[calc(100vh-theme(spacing.20))] lg:h-[calc(100vh-theme(spacing.24))] gap-4">
       {/* Mobile Overlay */}
       {showConversations && (
         <div
-          className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm"
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={() => setShowConversations(false)}
         />
       )}
@@ -114,8 +115,8 @@ export default function ChatThreadPage() {
       {/* Conversation List */}
       <div
         className={cn(
-          "flex-shrink-0 rounded-2xl overflow-hidden",
-          "shadow-[6px_6px_12px_#0a0f1a,-6px_-6px_12px_#1e2a4a]",
+          "flex-shrink-0 bg-white rounded-2xl overflow-hidden",
+          "shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff]",
           "transition-all duration-300 ease-in-out",
           // Desktop behavior
           "hidden lg:block",
@@ -134,9 +135,8 @@ export default function ChatThreadPage() {
       <div
         className={cn(
           "flex-1 flex flex-col min-w-0",
-          "rounded-2xl overflow-hidden",
-          "bg-secondary",
-          "shadow-[6px_6px_12px_#0a0f1a,-6px_-6px_12px_#1e2a4a]"
+          "bg-white rounded-2xl overflow-hidden",
+          "shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff]"
         )}
       >
         {/* Chat Header */}
@@ -147,16 +147,16 @@ export default function ChatThreadPage() {
           showInfoButton={true}
         />
 
-        {/* Messages Area */}
+        {/* Messages Area - This is the only scrollable area */}
         <div
           className={cn(
             "flex-1 overflow-y-auto p-6",
-            "bg-gradient-to-b from-secondary via-secondary to-secondary/95"
+            "bg-background"
           )}
         >
           {/* Date separator */}
           <div className="flex items-center justify-center mb-6">
-            <span className="px-3 py-1 text-xs text-text-secondary bg-white/5 rounded-full border border-white/10">
+            <span className="px-3 py-1 text-xs text-text-secondary bg-white rounded-full shadow-[2px_2px_4px_#d1d5db,-2px_-2px_4px_#ffffff]">
               Today
             </span>
           </div>
@@ -182,8 +182,8 @@ export default function ChatThreadPage() {
       {/* Info Panel */}
       <div
         className={cn(
-          "flex-shrink-0 rounded-2xl overflow-hidden",
-          "shadow-[6px_6px_12px_#0a0f1a,-6px_-6px_12px_#1e2a4a]",
+          "flex-shrink-0 bg-white rounded-2xl overflow-hidden",
+          "shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff]",
           "transition-all duration-300 ease-in-out",
           "hidden xl:block",
           showInfo ? "xl:w-[280px]" : "xl:w-0 xl:opacity-0"

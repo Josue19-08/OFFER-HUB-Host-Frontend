@@ -20,8 +20,14 @@ export function MessageBubble({ message, isOwn, showAvatar = true, participantAv
     >
       {/* Other user avatar */}
       {!isOwn && showAvatar && (
-        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-primary/30 to-accent/30 flex items-center justify-center self-end">
-          <span className="text-[10px] font-bold text-white">
+        <div
+          className={cn(
+            "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center self-end",
+            "bg-gradient-to-br from-primary/20 to-accent/20",
+            "shadow-[2px_2px_4px_#d1d5db,-2px_-2px_4px_#ffffff]"
+          )}
+        >
+          <span className="text-[10px] font-bold text-text-primary">
             {participantAvatar || "?"}
           </span>
         </div>
@@ -41,12 +47,13 @@ export function MessageBubble({ message, isOwn, showAvatar = true, participantAv
             isOwn
               ? cn(
                   "bg-primary text-white",
-                  "rounded-br-md"
+                  "rounded-br-md",
+                  "shadow-[4px_4px_8px_#d1d5db,-2px_-2px_4px_#ffffff]"
                 )
               : cn(
-                  "bg-white/10 text-white",
+                  "bg-white text-text-primary",
                   "rounded-bl-md",
-                  "border border-white/10"
+                  "shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]"
                 )
           )}
         >

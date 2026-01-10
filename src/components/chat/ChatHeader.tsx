@@ -21,8 +21,8 @@ export function ChatHeader({
     <div
       className={cn(
         "flex items-center justify-between px-6 py-4",
-        "border-b border-white/10",
-        "bg-secondary"
+        "border-b border-border-light",
+        "bg-white"
       )}
     >
       <div className="flex items-center gap-4">
@@ -32,10 +32,10 @@ export function ChatHeader({
             type="button"
             onClick={onToggleSidebar}
             className={cn(
-              "lg:hidden p-2 rounded-lg",
-              "text-text-secondary hover:text-white",
-              "hover:bg-white/10",
-              "transition-all duration-200 cursor-pointer"
+              "lg:hidden p-2 rounded-lg cursor-pointer",
+              "text-text-secondary hover:text-text-primary",
+              "hover:bg-background",
+              "transition-all duration-200"
             )}
           >
             <Icon path={ICON_PATHS.menu} size="md" />
@@ -47,26 +47,26 @@ export function ChatHeader({
           <div
             className={cn(
               "w-11 h-11 rounded-full flex items-center justify-center",
-              "bg-gradient-to-br from-primary/30 to-accent/30",
-              "ring-2 ring-primary/30"
+              "bg-gradient-to-br from-primary/20 to-accent/20",
+              "shadow-[3px_3px_6px_#d1d5db,-3px_-3px_6px_#ffffff]"
             )}
           >
-            <span className="text-sm font-semibold text-white">
+            <span className="text-sm font-semibold text-text-primary">
               {participant.avatar}
             </span>
           </div>
           {participant.isOnline && (
-            <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-secondary rounded-full" />
+            <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full" />
           )}
         </div>
 
         {/* Info */}
         <div>
-          <h2 className="font-semibold text-white">{participant.name}</h2>
+          <h2 className="font-semibold text-text-primary">{participant.name}</h2>
           <p className="text-xs text-text-secondary">
             {participant.isOnline ? (
-              <span className="text-green-400 flex items-center gap-1">
-                <span className="w-1.5 h-1.5 bg-green-400 rounded-full" />
+              <span className="text-green-600 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
                 Active now
               </span>
             ) : (
@@ -82,9 +82,10 @@ export function ChatHeader({
           type="button"
           className={cn(
             "p-2.5 rounded-xl cursor-pointer",
-            "text-text-secondary hover:text-white",
-            "bg-white/5 hover:bg-white/10",
-            "border border-white/10",
+            "text-text-secondary hover:text-primary",
+            "bg-background",
+            "shadow-[3px_3px_6px_#d1d5db,-3px_-3px_6px_#ffffff]",
+            "hover:shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]",
             "transition-all duration-200"
           )}
           title="Voice call"
@@ -97,9 +98,10 @@ export function ChatHeader({
           type="button"
           className={cn(
             "p-2.5 rounded-xl cursor-pointer",
-            "text-text-secondary hover:text-white",
-            "bg-white/5 hover:bg-white/10",
-            "border border-white/10",
+            "text-text-secondary hover:text-primary",
+            "bg-background",
+            "shadow-[3px_3px_6px_#d1d5db,-3px_-3px_6px_#ffffff]",
+            "hover:shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]",
             "transition-all duration-200"
           )}
           title="Video call"
@@ -112,9 +114,10 @@ export function ChatHeader({
             onClick={onToggleInfo}
             className={cn(
               "p-2.5 rounded-xl cursor-pointer",
-              "text-text-secondary hover:text-white",
-              "bg-white/5 hover:bg-white/10",
-              "border border-white/10",
+              "text-text-secondary hover:text-primary",
+              "bg-background",
+              "shadow-[3px_3px_6px_#d1d5db,-3px_-3px_6px_#ffffff]",
+              "hover:shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]",
               "transition-all duration-200",
               "hidden sm:flex"
             )}
@@ -123,21 +126,6 @@ export function ChatHeader({
             <Icon path={ICON_PATHS.user} size="md" />
           </button>
         )}
-        <button
-          type="button"
-          className={cn(
-            "p-2.5 rounded-xl cursor-pointer",
-            "text-text-secondary hover:text-white",
-            "bg-white/5 hover:bg-white/10",
-            "border border-white/10",
-            "transition-all duration-200"
-          )}
-          title="More options"
-        >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-          </svg>
-        </button>
       </div>
     </div>
   );

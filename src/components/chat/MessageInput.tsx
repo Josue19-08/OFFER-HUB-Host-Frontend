@@ -26,8 +26,8 @@ export function MessageInput({ onSendMessage, disabled = false }: MessageInputPr
       onSubmit={handleSubmit}
       className={cn(
         "flex items-center gap-3 px-6 py-4",
-        "border-t border-white/10",
-        "bg-secondary"
+        "border-t border-border-light",
+        "bg-white"
       )}
     >
       {/* Attachment button */}
@@ -35,9 +35,10 @@ export function MessageInput({ onSendMessage, disabled = false }: MessageInputPr
         type="button"
         className={cn(
           "p-2.5 rounded-xl cursor-pointer",
-          "text-text-secondary hover:text-white",
-          "bg-white/5 hover:bg-white/10",
-          "border border-white/10",
+          "text-text-secondary hover:text-primary",
+          "bg-background",
+          "shadow-[3px_3px_6px_#d1d5db,-3px_-3px_6px_#ffffff]",
+          "hover:shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]",
           "transition-all duration-200",
           "hidden sm:flex"
         )}
@@ -50,9 +51,8 @@ export function MessageInput({ onSendMessage, disabled = false }: MessageInputPr
       <div
         className={cn(
           "flex-1 flex items-center gap-3 px-4 py-3 rounded-xl",
-          "bg-white/5 border border-white/10",
-          "focus-within:border-primary/50 focus-within:bg-white/10",
-          "transition-all duration-200"
+          "bg-background",
+          "shadow-[inset_2px_2px_4px_#d1d5db,inset_-2px_-2px_4px_#ffffff]"
         )}
       >
         <input
@@ -62,37 +62,19 @@ export function MessageInput({ onSendMessage, disabled = false }: MessageInputPr
           placeholder="Type your message..."
           disabled={disabled}
           className={cn(
-            "flex-1 bg-transparent text-sm text-white",
-            "placeholder:text-text-secondary outline-none",
+            "flex-1 bg-transparent text-sm text-text-primary",
+            "placeholder:text-text-secondary/60 outline-none",
             disabled && "cursor-not-allowed opacity-50"
           )}
         />
         <button
           type="button"
-          className="text-text-secondary hover:text-white transition-colors cursor-pointer hidden sm:block"
+          className="text-text-secondary hover:text-primary transition-colors cursor-pointer hidden sm:block"
           title="Add emoji"
         >
           <Icon path={ICON_PATHS.emoji} size="md" />
         </button>
       </div>
-
-      {/* Voice message button */}
-      <button
-        type="button"
-        className={cn(
-          "p-2.5 rounded-xl cursor-pointer",
-          "text-text-secondary hover:text-white",
-          "bg-white/5 hover:bg-white/10",
-          "border border-white/10",
-          "transition-all duration-200",
-          "hidden sm:flex"
-        )}
-        title="Voice message"
-      >
-        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-        </svg>
-      </button>
 
       {/* Send button */}
       <button
@@ -104,12 +86,13 @@ export function MessageInput({ onSendMessage, disabled = false }: MessageInputPr
           message.trim() && !disabled
             ? cn(
                 "bg-primary text-white",
-                "hover:bg-primary-hover",
-                "shadow-[0_4px_12px_rgba(20,154,155,0.3)]"
+                "shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]",
+                "hover:shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff]",
+                "active:shadow-[inset_2px_2px_4px_rgba(0,0,0,0.1)]"
               )
             : cn(
-                "bg-white/5 text-text-secondary",
-                "border border-white/10",
+                "bg-background text-text-secondary",
+                "shadow-[3px_3px_6px_#d1d5db,-3px_-3px_6px_#ffffff]",
                 "cursor-not-allowed"
               )
         )}
