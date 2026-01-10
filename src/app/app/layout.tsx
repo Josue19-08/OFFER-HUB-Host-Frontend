@@ -13,14 +13,16 @@ export default function AppLayout({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="app-no-scroll h-screen bg-background flex flex-col overflow-hidden">
       {/* Navbar - Same as landing/marketplace */}
-      <Navbar />
+      <div className="flex-shrink-0">
+        <Navbar />
+      </div>
 
       {/* Content area below navbar */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 min-h-0">
         {/* Sidebar - Only visible on lg screens, hidden on mobile */}
-        <div className="hidden lg:block">
+        <div className="hidden lg:block flex-shrink-0">
           <AppSidebar
             isOpen={isSidebarOpen}
             onClose={() => setIsSidebarOpen(false)}
@@ -30,8 +32,8 @@ export default function AppLayout({
         {/* Main Content */}
         <main
           className={cn(
-            "flex-1 p-4 lg:p-6",
-            "overflow-y-auto"
+            "flex-1 p-4 lg:p-6 min-h-0 min-w-0",
+            "overflow-hidden"
           )}
         >
           {children}

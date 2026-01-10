@@ -70,7 +70,7 @@ export default function ChatThreadPage() {
 
   if (!chatThread) {
     return (
-      <div className="flex h-[calc(100vh-theme(spacing.20))] lg:h-[calc(100vh-theme(spacing.24))] items-center justify-center bg-white rounded-2xl shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff]">
+      <div className="flex h-full items-center justify-center bg-white rounded-2xl shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff]">
         <div className="text-center">
           <div
             className={cn(
@@ -103,7 +103,7 @@ export default function ChatThreadPage() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-theme(spacing.20))] lg:h-[calc(100vh-theme(spacing.24))] gap-4">
+    <div className="flex h-full gap-4">
       {/* Mobile Overlay */}
       {showConversations && (
         <div
@@ -134,7 +134,7 @@ export default function ChatThreadPage() {
       {/* Chat Area */}
       <div
         className={cn(
-          "flex-1 flex flex-col min-w-0",
+          "flex-1 flex flex-col min-w-0 min-h-0",
           "bg-white rounded-2xl overflow-hidden",
           "shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff]"
         )}
@@ -150,7 +150,7 @@ export default function ChatThreadPage() {
         {/* Messages Area - This is the only scrollable area */}
         <div
           className={cn(
-            "flex-1 overflow-y-auto p-6",
+            "flex-1 overflow-y-auto p-4 sm:p-6 min-h-0",
             "bg-background"
           )}
         >

@@ -16,7 +16,7 @@ export default function ChatPage() {
   }, [setCollapsed]);
 
   return (
-    <div className="flex h-[calc(100vh-theme(spacing.20))] lg:h-[calc(100vh-theme(spacing.24))] gap-4">
+    <div className="flex h-full gap-4">
       {/* Conversation List */}
       <div
         className={cn(

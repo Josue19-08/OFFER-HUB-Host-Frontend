@@ -55,6 +55,13 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Prevent page scroll on app pages - only internal elements should scroll */
+html:has(.app-no-scroll),
+html:has(.app-no-scroll) body {
+  overflow: hidden;
+  height: 100%;
+}
+
 /* Dark mode defaults */
 .dark {
   color-scheme: dark;
