@@ -132,8 +132,8 @@ const PHOTO_BUTTON_STYLES = cn(
 );
 
 const AVATAR_STYLES = cn(
-  "w-24 h-24 rounded-full flex items-center justify-center",
-  "bg-primary text-white text-3xl font-bold",
+  "w-18 h-18 rounded-full flex items-center justify-center",
+  "bg-primary text-white text-xl font-bold",
   "shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]"
 );
 
@@ -186,46 +186,47 @@ export default function ProfilePage(): React.JSX.Element {
   }
 
   return (
-    <div className="space-y-6 max-w-4xl">
-      <div>
-        <h1 className="text-2xl font-bold text-text-primary">Profile Settings</h1>
-        <p className="text-text-secondary mt-1">
-          Manage your account information and preferences
-        </p>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-text-primary">Profile Settings</h1>
+          <p className="text-text-secondary text-sm">
+            Manage your account information and preferences
+          </p>
+        </div>
+        {showSuccess && (
+          <div
+            className={cn(
+              "px-4 py-2 rounded-xl",
+              "bg-success/10 border border-success/20",
+              "animate-scale-in"
+            )}
+          >
+            <div className="flex items-center gap-2">
+              <Icon path={ICON_PATHS.check} size="sm" className="text-success flex-shrink-0" />
+              <p className="text-sm text-success font-medium">Profile updated!</p>
+            </div>
+          </div>
+        )}
       </div>
 
-      {showSuccess && (
-        <div
-          className={cn(
-            "p-4 rounded-xl",
-            "bg-success/10 border border-success/20",
-            "animate-scale-in"
-          )}
-        >
-          <div className="flex items-center gap-2">
-            <Icon path={ICON_PATHS.check} size="md" className="text-success flex-shrink-0" />
-            <p className="text-sm text-success font-medium">Profile updated successfully!</p>
-          </div>
-        </div>
-      )}
-
       <div className={NEUMORPHIC_CARD}>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="flex items-center gap-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="flex items-center gap-4">
             <div className={AVATAR_STYLES}>
               {formData.firstName.charAt(0).toUpperCase()}
               {formData.lastName.charAt(0).toUpperCase()}
             </div>
-            <div>
-              <h3 className="font-medium text-text-primary">Profile Photo</h3>
-              <p className="text-sm text-text-secondary mb-2">JPG, PNG or GIF. Max size 2MB.</p>
-              <button type="button" className={PHOTO_BUTTON_STYLES}>
-                Change Photo
-              </button>
+            <div className="flex-1">
+              <h3 className="font-medium text-text-primary text-sm">Profile Photo</h3>
+              <p className="text-xs text-text-secondary">JPG, PNG or GIF. Max 2MB.</p>
             </div>
+            <button type="button" className={PHOTO_BUTTON_STYLES}>
+              Change Photo
+            </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
             <FormInput
               label="First Name"
               name="firstName"
@@ -260,7 +261,7 @@ export default function ProfilePage(): React.JSX.Element {
               onChange={handleChange}
             />
             <FormInput
-              label="Phone Number"
+              label="Phone"
               name="phone"
               type="tel"
               value={formData.phone}
@@ -282,21 +283,21 @@ export default function ProfilePage(): React.JSX.Element {
               value={formData.website}
               placeholder="https://yourwebsite.com"
               onChange={handleChange}
-              className="md:col-span-2"
+              className="col-span-2 lg:col-span-3"
             />
 
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-text-primary mb-2">Bio</label>
+            <div className="col-span-2 lg:col-span-3">
+              <label className="block text-sm font-medium text-text-primary mb-1">Bio</label>
               <textarea
                 name="bio"
                 value={formData.bio}
                 onChange={handleChange}
-                rows={4}
+                rows={2}
                 className={cn(NEUMORPHIC_INPUT, "resize-none", errors.bio && INPUT_ERROR_STYLES)}
                 placeholder="Tell us about yourself..."
               />
               <div className="flex justify-between mt-1">
-                {errors.bio && <p className="text-sm text-error">{errors.bio}</p>}
+                {errors.bio && <p className="text-xs text-error">{errors.bio}</p>}
                 <p className="text-xs text-text-secondary ml-auto">
                   {formData.bio.length}/{MAX_BIO_LENGTH}
                 </p>
@@ -304,8 +305,8 @@ export default function ProfilePage(): React.JSX.Element {
             </div>
           </div>
 
-          <div className="flex justify-end pt-4">
-            <button type="submit" disabled={isLoading} className={PRIMARY_BUTTON}>
+          <div className="flex justify-end">
+            <button type="submit" disabled={isLoading} className={cn(PRIMARY_BUTTON, "py-2 px-5")}>
               {isLoading ? (
                 <span className="flex items-center gap-2">
                   <LoadingSpinner />
