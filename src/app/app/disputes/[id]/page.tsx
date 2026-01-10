@@ -1,0 +1,438 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
+import { cn } from "@/lib/cn";
+import { useModeStore } from "@/stores/mode-store";
+import { Icon, ICON_PATHS } from "@/components/ui/Icon";
+import {
+  NEUMORPHIC_CARD,
+  NEUMORPHIC_INSET,
+  ICON_BUTTON,
+} from "@/lib/styles";
+import { getDisputeById } from "@/data/dispute.data";
+import {
+  DISPUTE_REASON_LABELS,
+  DISPUTE_STATUS_LABELS,
+} from "@/types/dispute.types";
+import type { Dispute, DisputeStatus, DisputeComment } from "@/types/dispute.types";
+
+function formatDate(dateString: string): string {
+  return new Date(dateString).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
+function formatDateTime(dateString: string): string {
+  return new Date(dateString).toLocaleString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function getStatusColor(status: DisputeStatus): string {
+  switch (status) {
+    case "open":
+      return "bg-warning/20 text-warning";
+    case "under_review":
+      return "bg-primary/20 text-primary";
+    case "resolved":
+      return "bg-success/20 text-success";
+    case "closed":
+      return "bg-text-secondary/20 text-text-secondary";
+    default:
+      return "bg-background text-text-secondary";
+  }
+}
+
+function getEventIcon(type: string): string {
+  switch (type) {
+    case "created":
+      return ICON_PATHS.plus;
+    case "evidence_added":
+      return ICON_PATHS.file;
+    case "status_changed":
+      return ICON_PATHS.flag;
+    case "comment_added":
+      return ICON_PATHS.chat;
+    case "resolved":
+      return ICON_PATHS.check;
+    default:
+      return ICON_PATHS.clock;
+  }
+}
+
+function getCommentRoleColor(role: DisputeComment["authorRole"]): string {
+  switch (role) {
+    case "client":
+      return "bg-primary/10 border-primary/20";
+    case "freelancer":
+      return "bg-secondary/10 border-secondary/20";
+    case "admin":
+      return "bg-warning/10 border-warning/20";
+    default:
+      return "bg-background border-border";
+  }
+}
+
+function getCommentRoleLabel(role: DisputeComment["authorRole"]): string {
+  switch (role) {
+    case "client":
+      return "Client";
+    case "freelancer":
+      return "Freelancer";
+    case "admin":
+      return "Support";
+    default:
+      return "";
+  }
+}
+
+export default function DisputeDetailPage(): React.JSX.Element {
+  const params = useParams();
+  const router = useRouter();
+  const { setMode } = useModeStore();
+  const [dispute, setDispute] = useState<Dispute | null>(null);
+  const [newComment, setNewComment] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const disputeId = params.id as string;
+
+  useEffect(() => {
+    setMode("client");
+    const foundDispute = getDisputeById(disputeId);
+    if (foundDispute) {
+      setDispute(foundDispute);
+    }
+  }, [setMode, disputeId]);
+
+  async function handleSubmitComment(e: React.FormEvent): Promise<void> {
+    e.preventDefault();
+    if (!newComment.trim() || !dispute) return;
+
+    setIsSubmitting(true);
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    const comment: DisputeComment = {
+      id: `comment-${Date.now()}`,
+      content: newComment.trim(),
+      author: "You",
+      authorRole: "client",
+      timestamp: new Date().toISOString(),
+    };
+
+    setDispute((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        comments: [...prev.comments, comment],
+      };
+    });
+
+    setNewComment("");
+    setIsSubmitting(false);
+  }
+
+  if (!dispute) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className={cn(NEUMORPHIC_CARD, "text-center max-w-md")}>
+          <div
+            className={cn(
+              "w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center",
+              "bg-background",
+              "shadow-[inset_4px_4px_8px_#d1d5db,inset_-4px_-4px_8px_#ffffff]"
+            )}
+          >
+            <Icon path={ICON_PATHS.flag} size="xl" className="text-text-secondary" />
+          </div>
+          <h2 className="text-xl font-bold text-text-primary mb-2">
+            Dispute not found
+          </h2>
+          <p className="text-text-secondary mb-4">
+            The dispute you are looking for does not exist or has been removed.
+          </p>
+          <button
+            type="button"
+            onClick={() => router.push("/app/disputes")}
+            className={cn(
+              "px-5 py-2.5 rounded-xl cursor-pointer",
+              "bg-primary text-white text-sm font-medium",
+              "shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]",
+              "hover:shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff]",
+              "transition-all duration-200"
+            )}
+          >
+            Back to Disputes
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col h-full">
+      <div className="flex items-center gap-4 mb-4 flex-shrink-0">
+        <Link href="/app/disputes" className={ICON_BUTTON}>
+          <Icon path={ICON_PATHS.chevronLeft} size="md" className="text-text-primary" />
+        </Link>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-3 flex-wrap">
+            <h1 className="text-2xl font-bold text-text-primary truncate">
+              {dispute.offerTitle}
+            </h1>
+            <span
+              className={cn(
+                "px-3 py-1 rounded-lg text-sm font-medium flex-shrink-0",
+                getStatusColor(dispute.status)
+              )}
+            >
+              {DISPUTE_STATUS_LABELS[dispute.status]}
+            </span>
+          </div>
+          <p className="text-text-secondary mt-1">
+            Dispute #{dispute.id} • Opened {formatDate(dispute.createdAt)}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex-1 min-h-0 overflow-y-auto">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+          <div className="xl:col-span-2 space-y-4">
+            <div className={NEUMORPHIC_CARD}>
+              <h2 className="text-lg font-semibold text-text-primary mb-4">
+                Dispute Details
+              </h2>
+              <div className="space-y-4">
+                <div className="flex flex-wrap gap-4">
+                  <div className="flex-1 min-w-[200px]">
+                    <p className="text-text-secondary text-sm mb-1">Reason</p>
+                    <p className="text-text-primary font-medium">
+                      {DISPUTE_REASON_LABELS[dispute.reason]}
+                    </p>
+                  </div>
+                  <div className="flex-1 min-w-[200px]">
+                    <p className="text-text-secondary text-sm mb-1">Freelancer</p>
+                    <p className="text-text-primary font-medium">
+                      {dispute.freelancerName || "Unknown"}
+                    </p>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-text-secondary text-sm mb-1">Description</p>
+                  <p className="text-text-primary">{dispute.description}</p>
+                </div>
+                <div>
+                  <p className="text-text-secondary text-sm mb-1">Related Offer</p>
+                  <Link
+                    href={`/app/client/offers/${dispute.offerId}`}
+                    className="inline-flex items-center gap-2 text-primary hover:underline"
+                  >
+                    <Icon path={ICON_PATHS.briefcase} size="sm" />
+                    View Offer Details
+                  </Link>
+                </div>
+              </div>
+
+              {dispute.resolution && (
+                <div className={cn("mt-4 p-4 rounded-xl", NEUMORPHIC_INSET)}>
+                  <p className="text-sm font-medium text-success mb-2">Resolution</p>
+                  <p className="text-text-primary">{dispute.resolution}</p>
+                </div>
+              )}
+            </div>
+
+            {dispute.evidence.length > 0 && (
+              <div className={NEUMORPHIC_CARD}>
+                <h2 className="text-lg font-semibold text-text-primary mb-4">
+                  Evidence ({dispute.evidence.length})
+                </h2>
+                <div className="space-y-2">
+                  {dispute.evidence.map((file) => (
+                    <div
+                      key={file.id}
+                      className="flex items-center justify-between p-3 rounded-lg bg-background"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <Icon
+                          path={file.type.startsWith("image/") ? ICON_PATHS.image : ICON_PATHS.file}
+                          size="md"
+                          className="text-text-secondary flex-shrink-0"
+                        />
+                        <div className="min-w-0">
+                          <p className="text-text-primary text-sm font-medium truncate">
+                            {file.name}
+                          </p>
+                          <p className="text-text-secondary text-xs">
+                            Uploaded {formatDate(file.uploadedAt)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className={NEUMORPHIC_CARD}>
+              <h2 className="text-lg font-semibold text-text-primary mb-4">
+                Comments ({dispute.comments.length})
+              </h2>
+              <div className="space-y-4">
+                {dispute.comments.map((comment) => (
+                  <div
+                    key={comment.id}
+                    className={cn(
+                      "p-4 rounded-xl border",
+                      getCommentRoleColor(comment.authorRole)
+                    )}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-text-primary">
+                          {comment.author}
+                        </span>
+                        <span className="text-xs px-2 py-0.5 rounded bg-background text-text-secondary">
+                          {getCommentRoleLabel(comment.authorRole)}
+                        </span>
+                      </div>
+                      <span className="text-text-secondary text-sm">
+                        {formatDateTime(comment.timestamp)}
+                      </span>
+                    </div>
+                    <p className="text-text-primary">{comment.content}</p>
+                  </div>
+                ))}
+
+                {dispute.status !== "closed" && dispute.status !== "resolved" && (
+                  <form onSubmit={handleSubmitComment} className="mt-4">
+                    <div className={cn("rounded-xl", NEUMORPHIC_INSET)}>
+                      <textarea
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                        placeholder="Add a comment..."
+                        rows={3}
+                        className={cn(
+                          "w-full p-4 bg-transparent resize-none",
+                          "text-text-primary placeholder:text-text-secondary/60",
+                          "outline-none"
+                        )}
+                      />
+                    </div>
+                    <div className="flex justify-end mt-3">
+                      <button
+                        type="submit"
+                        disabled={isSubmitting || !newComment.trim()}
+                        className={cn(
+                          "px-5 py-2.5 rounded-xl font-medium cursor-pointer",
+                          "bg-primary text-white",
+                          "shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]",
+                          "hover:bg-primary-hover",
+                          "disabled:opacity-50 disabled:cursor-not-allowed",
+                          "transition-all duration-200"
+                        )}
+                      >
+                        {isSubmitting ? "Sending..." : "Send Comment"}
+                      </button>
+                    </div>
+                  </form>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className={NEUMORPHIC_CARD}>
+              <h2 className="text-lg font-semibold text-text-primary mb-4">
+                Timeline
+              </h2>
+              <div className="relative">
+                <div className="absolute left-3 top-0 bottom-0 w-0.5 bg-border" />
+                <div className="space-y-4">
+                  {dispute.events.map((event, index) => (
+                    <div key={event.id} className="relative flex gap-4">
+                      <div
+                        className={cn(
+                          "w-6 h-6 rounded-full flex items-center justify-center z-10",
+                          "bg-white",
+                          "shadow-[2px_2px_4px_#d1d5db,-2px_-2px_4px_#ffffff]",
+                          index === 0 ? "ring-2 ring-primary" : ""
+                        )}
+                      >
+                        <Icon
+                          path={getEventIcon(event.type)}
+                          size="sm"
+                          className={index === 0 ? "text-primary" : "text-text-secondary"}
+                        />
+                      </div>
+                      <div className="flex-1 pb-4">
+                        <p className="text-text-primary text-sm font-medium">
+                          {event.description}
+                        </p>
+                        <p className="text-text-secondary text-xs mt-1">
+                          {formatDateTime(event.timestamp)}
+                        </p>
+                        <p className="text-text-secondary text-xs">
+                          by {event.actor}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className={NEUMORPHIC_CARD}>
+              <h2 className="text-lg font-semibold text-text-primary mb-4">
+                Quick Info
+              </h2>
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-text-secondary text-sm">Status</span>
+                  <span
+                    className={cn(
+                      "px-2 py-0.5 rounded text-xs font-medium",
+                      getStatusColor(dispute.status)
+                    )}
+                  >
+                    {DISPUTE_STATUS_LABELS[dispute.status]}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-text-secondary text-sm">Created</span>
+                  <span className="text-text-primary text-sm">
+                    {formatDate(dispute.createdAt)}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-text-secondary text-sm">Last Updated</span>
+                  <span className="text-text-primary text-sm">
+                    {formatDate(dispute.updatedAt)}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-text-secondary text-sm">Evidence Files</span>
+                  <span className="text-text-primary text-sm">
+                    {dispute.evidence.length}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-text-secondary text-sm">Comments</span>
+                  <span className="text-text-primary text-sm">
+                    {dispute.comments.length}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

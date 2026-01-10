@@ -16,6 +16,30 @@ export interface DisputeEvidence {
   uploadedAt: string;
 }
 
+export type DisputeEventType =
+  | "created"
+  | "evidence_added"
+  | "status_changed"
+  | "comment_added"
+  | "resolved";
+
+export interface DisputeEvent {
+  id: string;
+  type: DisputeEventType;
+  description: string;
+  timestamp: string;
+  actor: string;
+  actorRole: "client" | "freelancer" | "admin";
+}
+
+export interface DisputeComment {
+  id: string;
+  content: string;
+  author: string;
+  authorRole: "client" | "freelancer" | "admin";
+  timestamp: string;
+}
+
 export interface Dispute {
   id: string;
   offerId: string;
@@ -24,9 +48,12 @@ export interface Dispute {
   description: string;
   status: DisputeStatus;
   evidence: DisputeEvidence[];
+  events: DisputeEvent[];
+  comments: DisputeComment[];
   createdAt: string;
   updatedAt: string;
   resolution?: string;
+  freelancerName?: string;
 }
 
 export interface DisputeFormData {

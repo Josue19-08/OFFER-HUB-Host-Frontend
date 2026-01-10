@@ -5,6 +5,7 @@ export const MOCK_DISPUTES: Dispute[] = [
     id: "dispute-1",
     offerId: "offer-1",
     offerTitle: "E-commerce Website Development",
+    freelancerName: "John Developer",
     reason: "quality_issues",
     description:
       "The delivered work does not meet the agreed specifications. Several features are missing and the code quality is below professional standards.",
@@ -18,6 +19,33 @@ export const MOCK_DISPUTES: Dispute[] = [
         uploadedAt: "2024-01-15T10:30:00Z",
       },
     ],
+    events: [
+      {
+        id: "event-1",
+        type: "created",
+        description: "Dispute opened by client",
+        timestamp: "2024-01-15T10:00:00Z",
+        actor: "You",
+        actorRole: "client",
+      },
+      {
+        id: "event-2",
+        type: "evidence_added",
+        description: "Evidence file uploaded: screenshot-bugs.png",
+        timestamp: "2024-01-15T10:30:00Z",
+        actor: "You",
+        actorRole: "client",
+      },
+    ],
+    comments: [
+      {
+        id: "comment-1",
+        content: "I have uploaded screenshots showing the bugs in the delivered work. The shopping cart functionality is completely broken.",
+        author: "You",
+        authorRole: "client",
+        timestamp: "2024-01-15T10:35:00Z",
+      },
+    ],
     createdAt: "2024-01-15T10:00:00Z",
     updatedAt: "2024-01-15T10:00:00Z",
   },
@@ -25,6 +53,7 @@ export const MOCK_DISPUTES: Dispute[] = [
     id: "dispute-2",
     offerId: "offer-2",
     offerTitle: "Mobile App UI Design",
+    freelancerName: "Sarah Designer",
     reason: "deadline_missed",
     description:
       "The freelancer failed to deliver the project by the agreed deadline without prior communication or explanation.",
@@ -45,6 +74,63 @@ export const MOCK_DISPUTES: Dispute[] = [
         uploadedAt: "2024-01-10T14:25:00Z",
       },
     ],
+    events: [
+      {
+        id: "event-3",
+        type: "created",
+        description: "Dispute opened by client",
+        timestamp: "2024-01-10T14:00:00Z",
+        actor: "You",
+        actorRole: "client",
+      },
+      {
+        id: "event-4",
+        type: "evidence_added",
+        description: "Evidence files uploaded: contract-agreement.pdf, chat-history.pdf",
+        timestamp: "2024-01-10T14:25:00Z",
+        actor: "You",
+        actorRole: "client",
+      },
+      {
+        id: "event-5",
+        type: "status_changed",
+        description: "Dispute status changed to Under Review",
+        timestamp: "2024-01-11T09:00:00Z",
+        actor: "Support Team",
+        actorRole: "admin",
+      },
+      {
+        id: "event-6",
+        type: "comment_added",
+        description: "Admin added a comment",
+        timestamp: "2024-01-12T09:30:00Z",
+        actor: "Support Team",
+        actorRole: "admin",
+      },
+    ],
+    comments: [
+      {
+        id: "comment-2",
+        content: "The deadline was clearly stated in the contract. I waited 5 extra days before opening this dispute.",
+        author: "You",
+        authorRole: "client",
+        timestamp: "2024-01-10T14:30:00Z",
+      },
+      {
+        id: "comment-3",
+        content: "I apologize for the delay. I had some personal issues but should have communicated better.",
+        author: "Sarah Designer",
+        authorRole: "freelancer",
+        timestamp: "2024-01-11T16:00:00Z",
+      },
+      {
+        id: "comment-4",
+        content: "We are reviewing this case. We will reach out to both parties for more information.",
+        author: "Support Team",
+        authorRole: "admin",
+        timestamp: "2024-01-12T09:30:00Z",
+      },
+    ],
     createdAt: "2024-01-10T14:00:00Z",
     updatedAt: "2024-01-12T09:30:00Z",
   },
@@ -52,10 +138,67 @@ export const MOCK_DISPUTES: Dispute[] = [
     id: "dispute-3",
     offerId: "offer-3",
     offerTitle: "SEO Optimization Service",
+    freelancerName: "Mike SEO Expert",
     reason: "scope_disagreement",
     description: "There was a misunderstanding about the scope of work. The freelancer claims additional features were out of scope.",
     status: "resolved",
     evidence: [],
+    events: [
+      {
+        id: "event-7",
+        type: "created",
+        description: "Dispute opened by client",
+        timestamp: "2024-01-05T08:00:00Z",
+        actor: "You",
+        actorRole: "client",
+      },
+      {
+        id: "event-8",
+        type: "status_changed",
+        description: "Dispute status changed to Under Review",
+        timestamp: "2024-01-06T10:00:00Z",
+        actor: "Support Team",
+        actorRole: "admin",
+      },
+      {
+        id: "event-9",
+        type: "resolved",
+        description: "Dispute resolved - Both parties agreed to split additional work cost",
+        timestamp: "2024-01-08T16:45:00Z",
+        actor: "Support Team",
+        actorRole: "admin",
+      },
+    ],
+    comments: [
+      {
+        id: "comment-5",
+        content: "The original agreement included keyword research and on-page optimization, but not link building.",
+        author: "Mike SEO Expert",
+        authorRole: "freelancer",
+        timestamp: "2024-01-05T12:00:00Z",
+      },
+      {
+        id: "comment-6",
+        content: "After reviewing the original contract, we propose a 50/50 cost split for the additional work.",
+        author: "Support Team",
+        authorRole: "admin",
+        timestamp: "2024-01-07T14:00:00Z",
+      },
+      {
+        id: "comment-7",
+        content: "I agree to the proposed resolution.",
+        author: "You",
+        authorRole: "client",
+        timestamp: "2024-01-08T10:00:00Z",
+      },
+      {
+        id: "comment-8",
+        content: "I also agree. Thank you for the fair resolution.",
+        author: "Mike SEO Expert",
+        authorRole: "freelancer",
+        timestamp: "2024-01-08T11:30:00Z",
+      },
+    ],
     createdAt: "2024-01-05T08:00:00Z",
     updatedAt: "2024-01-08T16:45:00Z",
     resolution: "After review, both parties agreed to split the additional work cost. Client paid 50% extra and freelancer completed the features.",
@@ -111,6 +254,11 @@ export function isOfferEligibleForDispute(offerId: string, offerStatus: string):
 // Mock function to get disputes for a specific offer
 export function getDisputesByOfferId(offerId: string): Dispute[] {
   return MOCK_DISPUTES.filter((d) => d.offerId === offerId);
+}
+
+// Mock function to get a dispute by ID
+export function getDisputeById(disputeId: string): Dispute | undefined {
+  return MOCK_DISPUTES.find((d) => d.id === disputeId);
 }
 
 // Mock eligible offers for the dispute form dropdown
