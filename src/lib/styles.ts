@@ -101,3 +101,9 @@ export const ACTION_BUTTON_SUBTLE = cn(
   ACTION_BUTTON_BASE,
   "text-text-secondary hover:bg-background"
 );
+
+export const SCROLLABLE_CONTAINER = cn(
+  "h-full min-h-0 overflow-y-auto",
+  "bg-white rounded-2xl p-6",
+  "shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff]"
+);

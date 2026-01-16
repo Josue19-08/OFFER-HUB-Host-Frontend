@@ -40,11 +40,11 @@ export function FreelancerCard({ freelancer }: FreelancerCardProps) {
     <>
       <div
         className={cn(
-          "p-6 rounded-3xl bg-white",
+          "p-6 rounded-3xl bg-white h-full",
           "shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff]",
           "hover:shadow-[8px_8px_16px_#d1d5db,-8px_-8px_16px_#ffffff]",
           "hover:scale-[1.02] transition-all duration-300",
-          "flex flex-col min-h-[280px]"
+          "flex flex-col"
         )}
       >
         {/* Header with Avatar */}
