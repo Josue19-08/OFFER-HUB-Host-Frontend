@@ -63,7 +63,16 @@ export function AppSidebar(_props: AppSidebarProps): React.JSX.Element {
   const navItems = getNavigationItems(mode);
 
   function isActiveLink(href: string): boolean {
-    return pathname === href || pathname.startsWith(href + "/");
+    if (pathname === href) return true;
+
+    const isSubRoute = pathname.startsWith(href + "/");
+    if (!isSubRoute) return false;
+
+    const hasMoreSpecificMatch = navItems.some(
+      (item) => item.href !== href && pathname.startsWith(item.href) && item.href.startsWith(href)
+    );
+
+    return !hasMoreSpecificMatch;
   }
 
   function handleModeChange(newMode: UserMode): void {

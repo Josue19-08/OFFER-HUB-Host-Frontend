@@ -255,11 +255,47 @@ html:has(.app-no-scroll) body {
   display: none;
 }
 
+/* App main content area - scrollable by default */
+.app-main-content {
+  overflow-y: auto;
+}
+
+/* When main contains a full-height page, disable scroll on main */
+.app-main-content:has(> .page-full-height) {
+  overflow: hidden;
+}
+
 /* Full height page - used for pages like chat that need to fill the viewport
    without creating their own scroll (they manage internal scroll) */
 .page-full-height {
   height: 100%;
   min-height: 0;
+}
+
+/* Scrollable content container - for dashboard pages that need internal scroll */
+.scrollable-content {
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* Custom scrollbar for scrollable content */
+.scrollable-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollable-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollable-content::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+.scrollable-content::-webkit-scrollbar-thumb:hover {
+  background: #b4b9c9;
 }
 
 /* Neumorphic Range Slider */
