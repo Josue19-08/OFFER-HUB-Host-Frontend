@@ -203,3 +203,33 @@ export function getConversationById(id: string): Conversation | undefined {
 export function getChatThreadById(id: string): ChatThread | undefined {
   return MOCK_CHAT_THREADS[id];
 }
+
+const DEFAULT_CHAT_ID = "1";
+
+const OFFER_TO_CHAT: Record<string, string> = {
+  "offer-1": "1",
+  "offer-2": "2",
+  "offer-3": "3",
+  "offer-4": "4",
+};
+
+const ORDER_TO_CHAT: Record<string, string> = {
+  "ord-1": "1",
+  "ord-2": "2",
+  "ord-3": "3",
+  "ord-4": "4",
+  "ord-5": "5",
+};
+
+export function getOrCreateChatByClientId(clientId: string): string {
+  const conversation = MOCK_CONVERSATIONS.find((c) => c.participant.id === clientId);
+  return conversation?.id ?? DEFAULT_CHAT_ID;
+}
+
+export function getChatIdByOfferId(offerId: string): string {
+  return OFFER_TO_CHAT[offerId] ?? DEFAULT_CHAT_ID;
+}
+
+export function getChatIdByOrderId(orderId: string): string {
+  return ORDER_TO_CHAT[orderId] ?? DEFAULT_CHAT_ID;
+}

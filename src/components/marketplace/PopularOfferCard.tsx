@@ -1,8 +1,10 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import type { Offer } from "@/types/marketplace.types";
 import { cn } from "@/lib/cn";
+import { getChatIdByOfferId } from "@/data/chat.data";
 
 interface PopularOfferCardProps {
   offer: Offer;
@@ -10,6 +12,14 @@ interface PopularOfferCardProps {
 }
 
 export function PopularOfferCard({ offer, onClick }: PopularOfferCardProps) {
+  const router = useRouter();
+
+  function handleApply(e: React.MouseEvent): void {
+    e.stopPropagation();
+    const chatId = getChatIdByOfferId(offer.id);
+    router.push(`/app/chat/${chatId}?offer=${offer.id}`);
+  }
+
   return (
     <div
       onClick={onClick}
@@ -66,13 +76,27 @@ export function PopularOfferCard({ offer, onClick }: PopularOfferCardProps) {
       </div>
 
       {/* Footer */}
-      <div className="flex items-center gap-2 text-xs text-text-secondary pt-2 border-t border-border-light">
-        <span className="inline-flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-primary" />
-          {offer.postedAt}
-        </span>
-        <span className="text-text-secondary/40">-</span>
-        <span>{offer.applicants} Applied</span>
+      <div className="flex items-center justify-between pt-2 border-t border-border-light">
+        <div className="flex items-center gap-2 text-xs text-text-secondary">
+          <span className="inline-flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-primary" />
+            {offer.postedAt}
+          </span>
+          <span className="text-text-secondary/40">-</span>
+          <span>{offer.applicants} Applied</span>
+        </div>
+        <button
+          onClick={handleApply}
+          className={cn(
+            "px-3 py-1.5 rounded-lg text-xs font-medium",
+            "bg-primary text-white",
+            "hover:bg-primary-hover transition-colors",
+            "shadow-[2px_2px_4px_#d1d5db,-2px_-2px_4px_#ffffff]",
+            "hover:shadow-[inset_2px_2px_4px_rgba(0,0,0,0.1)]"
+          )}
+        >
+          Apply
+        </button>
       </div>
     </div>
   );

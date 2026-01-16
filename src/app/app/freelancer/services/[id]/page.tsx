@@ -13,6 +13,7 @@ import {
   ORDER_STATUS_COLORS,
   getOrdersByServiceId,
 } from "@/data/service.data";
+import { getChatIdByOrderId } from "@/data/chat.data";
 import type { Service, ServiceOrder, ServiceStatus } from "@/types/service.types";
 
 interface PageProps {
@@ -86,7 +87,7 @@ function OrderCard({ order }: OrderCardProps): React.JSX.Element {
 
         <div className="flex items-center gap-1">
           <Link
-            href={`/app/chat?client=${order.id}`}
+            href={`/app/chat/${getChatIdByOrderId(order.id)}`}
             className={cn(
               "p-2 rounded-lg",
               "text-text-secondary hover:text-primary hover:bg-primary/10",
