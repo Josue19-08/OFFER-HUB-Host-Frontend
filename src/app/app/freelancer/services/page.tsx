@@ -26,15 +26,21 @@ function getCategoryLabel(value: string): string {
 
 interface ServiceCardProps {
   service: Service;
+  onDelete: (id: string) => void;
 }
 
-function ServiceCard({ service }: ServiceCardProps): React.JSX.Element {
+function ServiceCard({ service, onDelete }: ServiceCardProps): React.JSX.Element {
   return (
     <div className={cn(NEUMORPHIC_CARD, "p-4")}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-semibold text-text-primary truncate">{service.title}</h3>
+            <Link
+              href={`/app/freelancer/services/${service.id}`}
+              className="font-semibold text-text-primary truncate hover:text-primary transition-colors cursor-pointer"
+            >
+              {service.title}
+            </Link>
             <span
               className={cn(
                 "px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0",
@@ -63,8 +69,19 @@ function ServiceCard({ service }: ServiceCardProps): React.JSX.Element {
           <span className="text-text-secondary">{service.orders} orders</span>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            type="button"
+          <Link
+            href={`/app/freelancer/services/${service.id}`}
+            className={cn(
+              "p-2 rounded-lg",
+              "text-text-secondary hover:text-text-primary hover:bg-background",
+              "transition-colors cursor-pointer"
+            )}
+            title="View"
+          >
+            <Icon path={ICON_PATHS.eye} size="sm" />
+          </Link>
+          <Link
+            href={`/app/freelancer/services/${service.id}/edit`}
             className={cn(
               "p-2 rounded-lg",
               "text-text-secondary hover:text-text-primary hover:bg-background",
@@ -73,6 +90,18 @@ function ServiceCard({ service }: ServiceCardProps): React.JSX.Element {
             title="Edit"
           >
             <Icon path={ICON_PATHS.edit} size="sm" />
+          </Link>
+          <button
+            type="button"
+            onClick={() => onDelete(service.id)}
+            className={cn(
+              "p-2 rounded-lg",
+              "text-text-secondary hover:text-error hover:bg-error/10",
+              "transition-colors cursor-pointer"
+            )}
+            title="Delete"
+          >
+            <Icon path={ICON_PATHS.trash} size="sm" />
           </button>
         </div>
       </div>
@@ -81,7 +110,13 @@ function ServiceCard({ service }: ServiceCardProps): React.JSX.Element {
 }
 
 export default function ServicesPage(): React.JSX.Element {
-  const [services] = useState<Service[]>(MOCK_SERVICES);
+  const [services, setServices] = useState<Service[]>(MOCK_SERVICES);
+
+  function handleDelete(id: string) {
+    if (confirm("Are you sure you want to delete this service?")) {
+      setServices((prev) => prev.filter((s) => s.id !== id));
+    }
+  }
 
   return (
     <div className="space-y-4">
@@ -122,7 +157,7 @@ export default function ServicesPage(): React.JSX.Element {
       ) : (
         <div className="space-y-4">
           {services.map((service) => (
-            <ServiceCard key={service.id} service={service} />
+            <ServiceCard key={service.id} service={service} onDelete={handleDelete} />
           ))}
         </div>
       )}
