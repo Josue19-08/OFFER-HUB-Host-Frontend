@@ -45,6 +45,7 @@ export type OrderStatus = "pending" | "in_progress" | "delivered" | "completed" 
 export interface ServiceOrder {
   id: string;
   serviceId: string;
+  clientId: string;
   clientName: string;
   clientAvatar: string;
   status: OrderStatus;

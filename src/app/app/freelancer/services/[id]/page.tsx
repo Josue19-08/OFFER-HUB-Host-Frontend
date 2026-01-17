@@ -14,6 +14,9 @@ import {
   getOrdersByServiceId,
 } from "@/data/service.data";
 import { getChatIdByOrderId } from "@/data/chat.data";
+import { hasClientRating } from "@/data/rating.data";
+import { RateClientModal } from "@/components/rating";
+import { Toast } from "@/components/ui/Toast";
 import type { Service, ServiceOrder, ServiceStatus } from "@/types/service.types";
 
 interface PageProps {
@@ -46,9 +49,13 @@ function formatDate(dateString: string): string {
 
 interface OrderCardProps {
   order: ServiceOrder;
+  onRateClient: (order: ServiceOrder) => void;
 }
 
-function OrderCard({ order }: OrderCardProps): React.JSX.Element {
+function OrderCard({ order, onRateClient }: OrderCardProps): React.JSX.Element {
+  const isCompleted = order.status === "completed" || order.status === "delivered";
+  const alreadyRated = hasClientRating(order.id);
+
   return (
     <div className="flex items-center justify-between p-4 rounded-xl bg-background">
       <div className="flex items-center gap-3">
@@ -86,6 +93,33 @@ function OrderCard({ order }: OrderCardProps): React.JSX.Element {
         </span>
 
         <div className="flex items-center gap-1">
+          {isCompleted && (
+            alreadyRated ? (
+              <span
+                className={cn(
+                  "p-2 rounded-lg",
+                  "text-success"
+                )}
+                title="Client rated"
+              >
+                <Icon path={ICON_PATHS.star} size="sm" />
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={() => onRateClient(order)}
+                className={cn(
+                  "p-2 rounded-lg",
+                  "text-text-secondary hover:text-warning hover:bg-warning/10",
+                  "transition-colors cursor-pointer"
+                )}
+                title="Rate client"
+              >
+                <Icon path={ICON_PATHS.star} size="sm" />
+              </button>
+            )
+          )}
+
           <Link
             href={`/app/chat/${getChatIdByOrderId(order.id)}`}
             className={cn(
@@ -203,6 +237,9 @@ export default function ServiceDetailsPage({ params }: PageProps): React.JSX.Ele
 
   const initialService = MOCK_SERVICES.find((s) => s.id === id);
   const [service, setService] = useState<Service | undefined>(initialService);
+  const [ratingOrder, setRatingOrder] = useState<ServiceOrder | null>(null);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [, forceUpdate] = useState(0);
   const orders = getOrdersByServiceId(id);
 
   function handleStatusChange(newStatus: ServiceStatus): void {
@@ -215,6 +252,16 @@ export default function ServiceDetailsPage({ params }: PageProps): React.JSX.Ele
     if (confirm("Are you sure you want to delete this service? This action cannot be undone.")) {
       router.push("/app/freelancer/services");
     }
+  }
+
+  function handleRateClient(order: ServiceOrder): void {
+    setRatingOrder(order);
+  }
+
+  function handleRatingSuccess(): void {
+    setRatingOrder(null);
+    setShowSuccessToast(true);
+    forceUpdate((n) => n + 1);
   }
 
   if (!service) {
@@ -322,7 +369,11 @@ export default function ServiceDetailsPage({ params }: PageProps): React.JSX.Ele
               </h2>
               <div className="space-y-3">
                 {activeOrders.map((order) => (
-                  <OrderCard key={order.id} order={order} />
+                  <OrderCard
+                    key={order.id}
+                    order={order}
+                    onRateClient={handleRateClient}
+                  />
                 ))}
               </div>
             </div>
@@ -335,7 +386,11 @@ export default function ServiceDetailsPage({ params }: PageProps): React.JSX.Ele
               </h2>
               <div className="space-y-3">
                 {completedOrders.map((order) => (
-                  <OrderCard key={order.id} order={order} />
+                  <OrderCard
+                    key={order.id}
+                    order={order}
+                    onRateClient={handleRateClient}
+                  />
                 ))}
               </div>
             </div>
@@ -394,6 +449,23 @@ export default function ServiceDetailsPage({ params }: PageProps): React.JSX.Ele
           </div>
         </div>
       </div>
+
+      {ratingOrder && (
+        <RateClientModal
+          order={ratingOrder}
+          serviceTitle={service.title}
+          onClose={() => setRatingOrder(null)}
+          onSuccess={handleRatingSuccess}
+        />
+      )}
+
+      {showSuccessToast && (
+        <Toast
+          message="Rating submitted successfully!"
+          type="success"
+          onClose={() => setShowSuccessToast(false)}
+        />
+      )}
     </div>
   );
 }
