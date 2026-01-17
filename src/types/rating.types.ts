@@ -9,6 +9,18 @@ export interface FreelancerRating {
   createdAt: string;
 }
 
+export interface ClientRating {
+  id: string;
+  orderId: string;
+  clientId: string;
+  clientName: string;
+  serviceId: string;
+  serviceTitle: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+}
+
 export interface RatingFormData {
   rating: number;
   comment: string;

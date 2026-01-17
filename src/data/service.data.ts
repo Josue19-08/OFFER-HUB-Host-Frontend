@@ -81,6 +81,7 @@ export const MOCK_SERVICE_ORDERS: ServiceOrder[] = [
   {
     id: "ord-1",
     serviceId: "1",
+    clientId: "client-sarah",
     clientName: "Sarah Johnson",
     clientAvatar: "SJ",
     status: "in_progress",
@@ -92,6 +93,7 @@ export const MOCK_SERVICE_ORDERS: ServiceOrder[] = [
   {
     id: "ord-2",
     serviceId: "1",
+    clientId: "client-michael",
     clientName: "Michael Chen",
     clientAvatar: "MC",
     status: "pending",
@@ -103,6 +105,7 @@ export const MOCK_SERVICE_ORDERS: ServiceOrder[] = [
   {
     id: "ord-3",
     serviceId: "1",
+    clientId: "client-emily",
     clientName: "Emily Rodriguez",
     clientAvatar: "ER",
     status: "completed",
@@ -114,6 +117,7 @@ export const MOCK_SERVICE_ORDERS: ServiceOrder[] = [
   {
     id: "ord-4",
     serviceId: "1",
+    clientId: "client-david",
     clientName: "David Kim",
     clientAvatar: "DK",
     status: "delivered",
@@ -125,6 +129,7 @@ export const MOCK_SERVICE_ORDERS: ServiceOrder[] = [
   {
     id: "ord-5",
     serviceId: "2",
+    clientId: "client-lisa",
     clientName: "Lisa Thompson",
     clientAvatar: "LT",
     status: "in_progress",
