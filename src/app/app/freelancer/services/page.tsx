@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { Icon, ICON_PATHS } from "@/components/ui/Icon";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { NEUMORPHIC_CARD, PRIMARY_BUTTON } from "@/lib/styles";
 import { MOCK_SERVICES, SERVICE_CATEGORIES } from "@/data/service.data";
 import type { Service, ServiceStatus } from "@/types/service.types";
@@ -134,26 +135,14 @@ export default function ServicesPage(): React.JSX.Element {
       </div>
 
       {services.length === 0 ? (
-        <div className={cn(NEUMORPHIC_CARD, "text-center py-12")}>
-          <Icon
-            path={ICON_PATHS.briefcase}
-            size="xl"
-            className="text-gray-300 mx-auto mb-4"
-          />
-          <h3 className="text-lg font-medium text-text-primary mb-2">
-            No services yet
-          </h3>
-          <p className="text-text-secondary mb-4">
-            Create your first service to start attracting clients.
-          </p>
-          <Link
-            href="/app/freelancer/services/new"
-            className={cn(PRIMARY_BUTTON, "inline-flex items-center gap-2")}
-          >
-            <Icon path={ICON_PATHS.plus} size="sm" />
-            Create Your First Service
-          </Link>
-        </div>
+        <EmptyState
+          variant="card"
+          icon={ICON_PATHS.briefcase}
+          title="No services yet"
+          message="Create your first service to start attracting clients."
+          linkHref="/app/freelancer/services/new"
+          linkText="Create Your First Service"
+        />
       ) : (
         <div className="space-y-4">
           {services.map((service) => (
