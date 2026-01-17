@@ -7,6 +7,7 @@ import { cn } from "@/lib/cn";
 import { useModeStore } from "@/stores/mode-store";
 import { Icon, ICON_PATHS } from "@/components/ui/Icon";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { Skeleton } from "@/components/ui/LoadingState";
 import {
   NEUMORPHIC_CARD,
   NEUMORPHIC_INSET,
@@ -223,13 +224,27 @@ function LoadingFallback(): React.JSX.Element {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-2">
-          <div className="h-8 w-32 bg-background rounded animate-pulse" />
-          <div className="h-5 w-48 bg-background rounded animate-pulse" />
+          <Skeleton className="h-8 w-32" />
+          <Skeleton className="h-5 w-48" />
         </div>
       </div>
-      <div className={cn(NEUMORPHIC_CARD, "h-14 animate-pulse")} />
-      <div className={cn(NEUMORPHIC_CARD, "h-32 animate-pulse")} />
-      <div className={cn(NEUMORPHIC_CARD, "h-32 animate-pulse")} />
+      <div className={cn(NEUMORPHIC_CARD, "p-4")}>
+        <div className="flex gap-2">
+          <Skeleton className="h-10 w-20" />
+          <Skeleton className="h-10 w-24" />
+          <Skeleton className="h-10 w-28" />
+        </div>
+      </div>
+      <div className={cn(NEUMORPHIC_CARD, "space-y-3")}>
+        <Skeleton className="h-6 w-1/3" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-2/3" />
+      </div>
+      <div className={cn(NEUMORPHIC_CARD, "space-y-3")}>
+        <Skeleton className="h-6 w-1/3" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-2/3" />
+      </div>
     </div>
   );
 }

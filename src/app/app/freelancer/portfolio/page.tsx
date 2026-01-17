@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { cn } from "@/lib/cn";
 import { Icon, ICON_PATHS, LoadingSpinner } from "@/components/ui/Icon";
+import { EmptyState } from "@/components/ui/EmptyState";
 import {
   NEUMORPHIC_CARD,
   NEUMORPHIC_INPUT,
@@ -620,28 +621,14 @@ export default function PortfolioPage(): React.JSX.Element {
       )}
 
       {sortedItems.length === 0 ? (
-        <div className={cn(NEUMORPHIC_CARD, "text-center py-12")}>
-          <Icon
-            path={ICON_PATHS.image}
-            size="xl"
-            className="text-gray-300 mx-auto mb-4"
-          />
-          <h3 className="text-lg font-medium text-text-primary mb-2">
-            No projects yet
-          </h3>
-          <p className="text-text-secondary mb-4">
-            Start building your portfolio by adding your first project.
-          </p>
-          {!showForm && (
-            <button
-              onClick={() => setShowForm(true)}
-              className={cn(PRIMARY_BUTTON, "inline-flex items-center gap-2")}
-            >
-              <Icon path={ICON_PATHS.plus} size="sm" />
-              Add Your First Project
-            </button>
-          )}
-        </div>
+        <EmptyState
+          variant="card"
+          icon={ICON_PATHS.image}
+          title="No projects yet"
+          message="Start building your portfolio by adding your first project."
+          actionLabel={showForm ? undefined : "Add Your First Project"}
+          onAction={showForm ? undefined : () => setShowForm(true)}
+        />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {sortedItems.map((item, index) => (
