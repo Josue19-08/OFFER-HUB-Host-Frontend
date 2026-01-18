@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "@/app/globals.css";
+import { NavigationProgressProvider } from "@/components/providers/NavigationProgressProvider";
 
 export const metadata: Metadata = {
   title: "OFFER-HUB",
@@ -18,7 +19,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <NavigationProgressProvider />
+        {children}
+      </body>
     </html>
   );
 }

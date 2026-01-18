@@ -4,4 +4,5 @@ export { Card } from "./Card";
 export { Container } from "./Container";
 export { Input } from "./Input";
 export { Logo } from "./Logo";
+export { NavigationProgress } from "./NavigationProgress";
 export { StaggeredChildren } from "./StaggeredChildren";
