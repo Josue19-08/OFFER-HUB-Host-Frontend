@@ -43,6 +43,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.5,
     },
+    {
+      url: `${SITE_URL}/terms`,
+      lastModified: currentDate,
+      changeFrequency: "monthly",
+      priority: 0.3,
+    },
+    {
+      url: `${SITE_URL}/privacy`,
+      lastModified: currentDate,
+      changeFrequency: "monthly",
+      priority: 0.3,
+    },
   ];
 
   // TODO: Add dynamic pages (marketplace listings, user profiles) when data fetching is implemented
