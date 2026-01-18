@@ -10,12 +10,6 @@ interface LazySectionProps {
   fallback?: ReactNode;
 }
 
-/**
- * LazySection - Lazy loads content when it enters the viewport
- *
- * Uses Intersection Observer for efficient below-the-fold content loading.
- * Great for improving initial page load performance.
- */
 export function LazySection({
   children,
   className,
@@ -23,7 +17,6 @@ export function LazySection({
   threshold = 0,
   fallback,
 }: LazySectionProps): React.JSX.Element {
-  const [isVisible, setIsVisible] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
 
@@ -31,9 +24,7 @@ export function LazySection({
     const element = sectionRef.current;
     if (!element) return;
 
-    // If IntersectionObserver is not supported, render immediately
     if (!("IntersectionObserver" in window)) {
-      setIsVisible(true);
       setHasLoaded(true);
       return;
     }
@@ -41,15 +32,11 @@ export function LazySection({
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setIsVisible(true);
           setHasLoaded(true);
           observer.unobserve(element);
         }
       },
-      {
-        rootMargin,
-        threshold,
-      }
+      { rootMargin, threshold }
     );
 
     observer.observe(element);
@@ -61,7 +48,7 @@ export function LazySection({
 
   return (
     <div ref={sectionRef} className={className}>
-      {hasLoaded ? children : (isVisible ? children : (fallback || <LazySectionPlaceholder />))}
+      {hasLoaded ? children : (fallback || <LazySectionPlaceholder />)}
     </div>
   );
 }

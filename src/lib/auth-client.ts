@@ -1,10 +1,3 @@
-/**
- * Auth Client
- *
- * Client-side utilities for interacting with the secure auth API.
- * Tokens are stored in httpOnly cookies managed by the server.
- */
-
 interface TokenResponse {
   success: boolean;
   error?: string;
@@ -15,10 +8,27 @@ interface AuthStatus {
   hasRefreshToken: boolean;
 }
 
-/**
- * Store auth tokens securely via server API
- * The tokens will be stored in httpOnly cookies
- */
+const DEFAULT_AUTH_STATUS: AuthStatus = { authenticated: false, hasRefreshToken: false };
+
+function getErrorMessage(error: unknown, fallback: string): string {
+  return error instanceof Error ? error.message : fallback;
+}
+
+async function authFetch(
+  url: string,
+  options: RequestInit
+): Promise<{ ok: boolean; data?: Record<string, unknown> }> {
+  try {
+    const response = await fetch(url, { ...options, credentials: "include" });
+    const data = response.ok || response.headers.get("content-type")?.includes("json")
+      ? await response.json()
+      : undefined;
+    return { ok: response.ok, data };
+  } catch {
+    return { ok: false };
+  }
+}
+
 export async function setAuthTokens(
   token: string,
   refreshToken?: string
@@ -37,85 +47,38 @@ export async function setAuthTokens(
 
     return { success: true };
   } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to store tokens",
-    };
+    return { success: false, error: getErrorMessage(error, "Failed to store tokens") };
   }
 }
 
-/**
- * Check if user is authenticated (has valid token cookie)
- */
 export async function checkAuthStatus(): Promise<AuthStatus> {
-  try {
-    const response = await fetch("/api/auth/token", {
-      method: "GET",
-      credentials: "include",
-    });
-
-    if (!response.ok) {
-      return { authenticated: false, hasRefreshToken: false };
-    }
-
-    return await response.json();
-  } catch {
-    return { authenticated: false, hasRefreshToken: false };
+  const { ok, data } = await authFetch("/api/auth/token", { method: "GET" });
+  if (ok && data && typeof data.authenticated === "boolean") {
+    return data as unknown as AuthStatus;
   }
+  return DEFAULT_AUTH_STATUS;
 }
 
-/**
- * Clear all auth cookies (logout)
- */
 export async function clearAuthTokens(): Promise<TokenResponse> {
-  try {
-    const response = await fetch("/api/auth/token", {
-      method: "DELETE",
-      credentials: "include",
-    });
+  const { ok, data } = await authFetch("/api/auth/token", { method: "DELETE" });
 
-    if (!response.ok) {
-      const data = await response.json();
-      return { success: false, error: data.error };
-    }
-
-    return { success: true };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to clear tokens",
-    };
+  if (!ok) {
+    return { success: false, error: data?.error as string | undefined };
   }
+
+  return { success: true };
 }
 
-/**
- * Refresh the auth token using the refresh token
- */
 export async function refreshAuthToken(): Promise<TokenResponse> {
-  try {
-    const response = await fetch("/api/auth/refresh", {
-      method: "POST",
-      credentials: "include",
-    });
+  const { ok, data } = await authFetch("/api/auth/refresh", { method: "POST" });
 
-    if (!response.ok) {
-      const data = await response.json();
-      return { success: false, error: data.error };
-    }
-
-    return { success: true };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to refresh token",
-    };
+  if (!ok) {
+    return { success: false, error: data?.error as string | undefined };
   }
+
+  return { success: true };
 }
 
-/**
- * Setup automatic token refresh
- * Call this once when the app loads if user is authenticated
- */
 export function setupTokenRefresh(intervalMinutes: number = 10): () => void {
   const intervalMs = intervalMinutes * 60 * 1000;
 
@@ -127,6 +90,5 @@ export function setupTokenRefresh(intervalMinutes: number = 10): () => void {
     }
   }, intervalMs);
 
-  // Return cleanup function
   return () => clearInterval(intervalId);
 }

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 
-// Site configuration
 export const SITE_CONFIG = {
   name: "OFFER HUB",
   description: "Connect with top freelancers and clients on OFFER HUB - the premier marketplace for professional services. Find talent, post projects, and grow your business.",
@@ -9,7 +8,6 @@ export const SITE_CONFIG = {
   twitterHandle: "@offerhub",
 } as const;
 
-// Default Open Graph image
 export const DEFAULT_OG_IMAGE = {
   url: "/og-image.png",
   width: 1200,
@@ -17,9 +15,6 @@ export const DEFAULT_OG_IMAGE = {
   alt: "OFFER HUB - Freelance Marketplace",
 } as const;
 
-/**
- * Generate metadata for a page with SEO best practices
- */
 export function generatePageMetadata({
   title,
   description,
@@ -40,7 +35,7 @@ export function generatePageMetadata({
 }): Metadata {
   const fullTitle = title === SITE_CONFIG.name ? title : `${title} | ${SITE_CONFIG.name}`;
   const canonicalUrl = `${SITE_CONFIG.url}${path}`;
-  const ogImage = image || DEFAULT_OG_IMAGE;
+  const ogImage = { ...DEFAULT_OG_IMAGE, ...image };
 
   return {
     title: fullTitle,
@@ -56,14 +51,7 @@ export function generatePageMetadata({
       siteName: SITE_CONFIG.name,
       locale: SITE_CONFIG.locale,
       type: "website",
-      images: [
-        {
-          url: ogImage.url,
-          width: ogImage.width || DEFAULT_OG_IMAGE.width,
-          height: ogImage.height || DEFAULT_OG_IMAGE.height,
-          alt: ogImage.alt || DEFAULT_OG_IMAGE.alt,
-        },
-      ],
+      images: [ogImage],
     },
     twitter: {
       card: "summary_large_image",
@@ -78,9 +66,6 @@ export function generatePageMetadata({
   };
 }
 
-/**
- * JSON-LD structured data for organization
- */
 export function getOrganizationSchema(): object {
   return {
     "@context": "https://schema.org",
@@ -95,9 +80,6 @@ export function getOrganizationSchema(): object {
   };
 }
 
-/**
- * JSON-LD structured data for website
- */
 export function getWebsiteSchema(): object {
   return {
     "@context": "https://schema.org",
@@ -116,9 +98,6 @@ export function getWebsiteSchema(): object {
   };
 }
 
-/**
- * JSON-LD structured data for a service listing
- */
 export function getServiceSchema({
   name,
   description,
@@ -152,9 +131,6 @@ export function getServiceSchema({
   };
 }
 
-/**
- * JSON-LD structured data for FAQ page
- */
 export function getFAQSchema(
   faqs: Array<{ question: string; answer: string }>
 ): object {
@@ -172,9 +148,6 @@ export function getFAQSchema(
   };
 }
 
-/**
- * JSON-LD structured data for breadcrumbs
- */
 export function getBreadcrumbSchema(
   items: Array<{ name: string; url: string }>
 ): object {

@@ -6,16 +6,6 @@ import {
   COOKIE_CONFIG,
 } from "@/lib/cookies";
 
-/**
- * POST /api/auth/refresh
- * Refresh the auth token using the refresh token
- *
- * This endpoint:
- * 1. Reads the refresh token from httpOnly cookie
- * 2. Validates it with your backend auth service
- * 3. Issues new tokens if valid
- * 4. Clears cookies if invalid
- */
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const cookieHeader = request.headers.get("cookie");
   const cookies = parseCookies(cookieHeader);
@@ -46,18 +36,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const token = `refreshed-token-${Date.now()}`;
     const newRefreshToken = `new-refresh-token-${Date.now()}`;
 
-    const response = NextResponse.json({
-      success: true,
-      message: "Token refreshed successfully",
-    });
+    const response = NextResponse.json({ success: true });
 
-    // Set new auth token
     response.headers.append(
       "Set-Cookie",
       buildSecureCookie(COOKIE_CONFIG.AUTH_TOKEN, token)
     );
 
-    // Set new refresh token (token rotation for security)
     response.headers.append(
       "Set-Cookie",
       buildSecureCookie(
@@ -69,7 +54,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     return response;
   } catch {
-    // Clear invalid tokens
     const response = NextResponse.json(
       { error: "Token refresh failed" },
       { status: 401 }
