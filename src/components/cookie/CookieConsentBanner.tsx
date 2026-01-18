@@ -104,152 +104,116 @@ export function CookieConsentBanner() {
       aria-labelledby="cookie-consent-title"
       aria-describedby="cookie-consent-description"
       className={cn(
-        "fixed bottom-0 left-0 right-0 z-[100] p-4 sm:p-6",
+        "fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 z-[100]",
+        "sm:max-w-md",
         "animate-slide-up"
       )}
     >
       <div
         className={cn(
-          "max-w-4xl mx-auto p-6 rounded-2xl bg-white",
-          "shadow-[8px_8px_16px_#d1d5db,-8px_-8px_16px_#ffffff]",
+          "p-5 rounded-xl bg-white",
+          "shadow-[4px_4px_12px_#d1d5db,-4px_-4px_12px_#ffffff]",
           "border border-border-light"
         )}
       >
         {!showPreferences ? (
           <>
-            <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-              <div className="flex-1">
-                <h2
-                  id="cookie-consent-title"
-                  className="text-lg font-semibold text-text-primary mb-2"
-                >
-                  We Value Your Privacy
-                </h2>
-                <p
-                  id="cookie-consent-description"
-                  className="text-sm text-text-secondary leading-relaxed"
-                >
-                  We use cookies to enhance your browsing experience, analyze site traffic,
-                  and personalize content. By clicking &quot;Accept All&quot;, you consent to our
-                  use of cookies. Read our{" "}
-                  <Link
-                    href="/privacy"
-                    className="text-primary hover:underline font-medium"
-                  >
-                    Privacy Policy
-                  </Link>{" "}
-                  to learn more.
-                </p>
-              </div>
-            </div>
+            <p
+              id="cookie-consent-description"
+              className="text-sm text-text-secondary leading-relaxed"
+            >
+              <span id="cookie-consent-title" className="font-medium text-text-primary">
+                We use cookies
+              </span>{" "}
+              to improve your experience.{" "}
+              <Link href="/privacy" className="text-primary hover:underline">
+                Learn more
+              </Link>
+            </p>
 
-            <div className="flex flex-col sm:flex-row gap-3 mt-4">
-              <Button
-                variant="primary"
-                size="sm"
+            <div className="flex items-center gap-3 mt-4">
+              <button
                 onClick={handleAcceptAll}
-                className="w-full sm:w-auto"
+                className="flex-1 px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors"
               >
-                Accept All
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
+                Accept
+              </button>
+              <button
                 onClick={handleRejectAll}
-                className="w-full sm:w-auto"
+                className="flex-1 px-4 py-2 text-sm font-medium text-text-secondary border border-border-light rounded-lg hover:bg-background transition-colors"
               >
-                Reject All
-              </Button>
+                Reject
+              </button>
               <button
                 onClick={() => setShowPreferences(true)}
-                className="text-sm text-text-secondary hover:text-text-primary underline transition-colors"
+                className="p-2 text-text-secondary hover:text-text-primary transition-colors"
+                aria-label="Cookie settings"
+                title="Settings"
               >
-                Manage Preferences
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
               </button>
             </div>
           </>
         ) : (
           <>
-            <h2 className="text-lg font-semibold text-text-primary mb-4">
-              Cookie Preferences
-            </h2>
-
-            <div className="space-y-4 mb-6">
-              <div className="flex items-start justify-between gap-4 p-4 rounded-xl bg-background">
-                <div>
-                  <h3 className="font-medium text-text-primary">Necessary Cookies</h3>
-                  <p className="text-sm text-text-secondary mt-1">
-                    Essential for the website to function properly. Cannot be disabled.
-                  </p>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={true}
-                    disabled
-                    className="w-5 h-5 rounded accent-primary cursor-not-allowed"
-                    aria-label="Necessary cookies (always enabled)"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-start justify-between gap-4 p-4 rounded-xl bg-background">
-                <div>
-                  <h3 className="font-medium text-text-primary">Analytics Cookies</h3>
-                  <p className="text-sm text-text-secondary mt-1">
-                    Help us understand how visitors interact with our website.
-                  </p>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={preferences.analytics}
-                    onChange={(e) =>
-                      setPreferences((prev) => ({ ...prev, analytics: e.target.checked }))
-                    }
-                    className="w-5 h-5 rounded accent-primary cursor-pointer"
-                    aria-label="Analytics cookies"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-start justify-between gap-4 p-4 rounded-xl bg-background">
-                <div>
-                  <h3 className="font-medium text-text-primary">Marketing Cookies</h3>
-                  <p className="text-sm text-text-secondary mt-1">
-                    Used to track visitors across websites for advertising purposes.
-                  </p>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={preferences.marketing}
-                    onChange={(e) =>
-                      setPreferences((prev) => ({ ...prev, marketing: e.target.checked }))
-                    }
-                    className="w-5 h-5 rounded accent-primary cursor-pointer"
-                    aria-label="Marketing cookies"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={handleSavePreferences}
-                className="w-full sm:w-auto"
-              >
-                Save Preferences
-              </Button>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-base font-medium text-text-primary">Cookie Settings</h2>
               <button
                 onClick={() => setShowPreferences(false)}
-                className="text-sm text-text-secondary hover:text-text-primary underline transition-colors"
+                className="p-1.5 text-text-secondary hover:text-text-primary transition-colors"
+                aria-label="Back"
               >
-                Back
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
             </div>
+
+            <div className="space-y-3">
+              <label className="flex items-center justify-between py-2">
+                <span className="text-sm text-text-secondary">Necessary</span>
+                <input
+                  type="checkbox"
+                  checked={true}
+                  disabled
+                  className="w-5 h-5 rounded accent-primary cursor-not-allowed opacity-50"
+                />
+              </label>
+
+              <label className="flex items-center justify-between py-2 cursor-pointer">
+                <span className="text-sm text-text-secondary">Analytics</span>
+                <input
+                  type="checkbox"
+                  checked={preferences.analytics}
+                  onChange={(e) =>
+                    setPreferences((prev) => ({ ...prev, analytics: e.target.checked }))
+                  }
+                  className="w-5 h-5 rounded accent-primary cursor-pointer"
+                />
+              </label>
+
+              <label className="flex items-center justify-between py-2 cursor-pointer">
+                <span className="text-sm text-text-secondary">Marketing</span>
+                <input
+                  type="checkbox"
+                  checked={preferences.marketing}
+                  onChange={(e) =>
+                    setPreferences((prev) => ({ ...prev, marketing: e.target.checked }))
+                  }
+                  className="w-5 h-5 rounded accent-primary cursor-pointer"
+                />
+              </label>
+            </div>
+
+            <button
+              onClick={handleSavePreferences}
+              className="w-full mt-4 px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors"
+            >
+              Save
+            </button>
           </>
         )}
       </div>
