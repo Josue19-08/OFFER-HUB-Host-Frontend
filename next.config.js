@@ -14,6 +14,9 @@ const nextConfig = {
   // Power optimizations by reducing bundle size
   reactStrictMode: true,
 
+  // Source maps for production error debugging
+  productionBrowserSourceMaps: true,
+
   // Experimental features for better performance
   experimental: {
     optimizePackageImports: ["@/components/ui", "@/lib"],

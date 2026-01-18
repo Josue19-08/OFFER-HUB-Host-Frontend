@@ -273,6 +273,17 @@ html:has(.app-no-scroll) body {
   }
 }
 
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Animation utility classes */
 .animate-fade-in {
   animation: fadeIn 0.2s ease-out forwards;
@@ -322,6 +333,10 @@ html:has(.app-no-scroll) body {
 
 .animate-wave-5 {
   animation: waveFloat5 5.5s ease-in-out infinite;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out forwards;
 }
 
 /* 404 Page - Lamp animations */
