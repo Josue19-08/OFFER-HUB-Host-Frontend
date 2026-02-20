@@ -1,14 +1,17 @@
+"use client";
+
 import { cn } from "@/lib/cn";
 import { Icon, ICON_PATHS } from "@/components/ui/Icon";
 import { formatFileSize } from "@/data/client-offer.data";
 import type { Attachment } from "@/types/client-offer.types";
 
-interface AttachmentPreviewProps {
+export interface AttachmentPreviewProps {
   attachment: Attachment;
   onRemove: () => void;
+  displaySize?: number;
 }
 
-export function AttachmentPreview({ attachment, onRemove }: AttachmentPreviewProps): React.JSX.Element {
+export function AttachmentPreview({ attachment, onRemove, displaySize }: AttachmentPreviewProps): React.JSX.Element {
   const iconPath = attachment.type === "image" ? ICON_PATHS.image : ICON_PATHS.document;
 
   return (
@@ -38,7 +41,7 @@ export function AttachmentPreview({ attachment, onRemove }: AttachmentPreviewPro
 
       <div className="absolute inset-x-0 bottom-0 bg-black/60 p-2">
         <p className="text-xs text-white truncate">{attachment.file.name}</p>
-        <p className="text-xs text-white/70">{formatFileSize(attachment.file.size)}</p>
+        <p className="text-xs text-white/70">{formatFileSize(displaySize ?? attachment.file.size)}</p>
       </div>
 
       <button

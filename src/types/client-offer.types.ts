@@ -9,6 +9,7 @@ export interface Attachment {
   file: File;
   preview?: string;
   type: "image" | "document";
+  displaySize?: number;
 }
 
 export interface OfferAttachmentData {

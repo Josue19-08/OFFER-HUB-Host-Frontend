@@ -75,6 +75,7 @@ export default function EditOfferPage(): React.JSX.Element {
         file: new File([], att.name, { type: att.type === "image" ? "image/png" : "application/pdf" }),
         type: att.type,
         preview: undefined,
+        displaySize: att.size,
       }));
       setAttachments(preloaded);
     }
@@ -308,6 +309,7 @@ export default function EditOfferPage(): React.JSX.Element {
                       key={attachment.id}
                       attachment={attachment}
                       onRemove={() => removeAttachment(attachment.id)}
+                      displaySize={attachment.displaySize}
                     />
                   ))}
                 </div>
