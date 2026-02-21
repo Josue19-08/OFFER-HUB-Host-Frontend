@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { Icon, ICON_PATHS } from "@/components/ui/Icon";
+import { ConfirmationModal } from "@/components/ui/ConfirmationModal";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { NEUMORPHIC_CARD, PRIMARY_BUTTON } from "@/lib/styles";
 import { MOCK_SERVICES, SERVICE_CATEGORIES } from "@/data/service.data";
@@ -113,10 +114,24 @@ function ServiceCard({ service, onDelete }: ServiceCardProps): React.JSX.Element
 export default function ServicesPage(): React.JSX.Element {
   const [services, setServices] = useState<Service[]>(MOCK_SERVICES);
 
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
+
   function handleDelete(id: string) {
-    if (confirm("Are you sure you want to delete this service?")) {
-      setServices((prev) => prev.filter((s) => s.id !== id));
-    }
+    setDeleteTarget(id);
+    setDeleteModalOpen(true);
+  }
+
+  async function handleConfirmDelete(): Promise<void> {
+    if (!deleteTarget) return;
+    setIsConfirming(true);
+    // small delay to show spinner in UI and mimic async
+    await new Promise((r) => setTimeout(r, 250));
+    setServices((prev) => prev.filter((s) => s.id !== deleteTarget));
+    setIsConfirming(false);
+    setDeleteTarget(null);
+    setDeleteModalOpen(false);
   }
 
   return (
@@ -124,11 +139,12 @@ export default function ServicesPage(): React.JSX.Element {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-text-primary">My Services</h1>
-          <p className="text-text-secondary text-sm">
-            Manage your service offerings
-          </p>
+          <p className="text-text-secondary text-sm">Manage your service offerings</p>
         </div>
-        <Link href="/app/freelancer/services/new" className={cn(PRIMARY_BUTTON, "flex items-center gap-2")}>
+        <Link
+          href="/app/freelancer/services/new"
+          className={cn(PRIMARY_BUTTON, "flex items-center gap-2")}
+        >
           <Icon path={ICON_PATHS.plus} size="sm" />
           Create Service
         </Link>
@@ -150,6 +166,19 @@ export default function ServicesPage(): React.JSX.Element {
           ))}
         </div>
       )}
+
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Service?"
+        message="Are you sure you want to delete this service? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="danger"
+        icon={ICON_PATHS.trash}
+        isLoading={isConfirming}
+      />
     </div>
   );
 }

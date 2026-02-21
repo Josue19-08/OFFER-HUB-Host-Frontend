@@ -17,6 +17,7 @@ import { getChatIdByOrderId } from "@/data/chat.data";
 import { hasClientRating } from "@/data/rating.data";
 import { RateClientModal } from "@/components/rating";
 import { Toast } from "@/components/ui/Toast";
+import { ConfirmationModal } from "@/components/ui/ConfirmationModal";
 import type { Service, ServiceOrder, ServiceStatus } from "@/types/service.types";
 
 interface PageProps {
@@ -69,18 +70,14 @@ function OrderCard({ order, onRateClient }: OrderCardProps): React.JSX.Element {
         </div>
         <div>
           <p className="font-medium text-text-primary">{order.clientName}</p>
-          <p className="text-sm text-text-secondary">
-            Ordered {formatDate(order.orderedAt)}
-          </p>
+          <p className="text-sm text-text-secondary">Ordered {formatDate(order.orderedAt)}</p>
         </div>
       </div>
 
       <div className="flex items-center gap-4">
         <div className="text-right hidden sm:block">
           <p className="font-semibold text-text-primary">${order.price}</p>
-          <p className="text-xs text-text-secondary">
-            Due {formatDate(order.deliveryDate)}
-          </p>
+          <p className="text-xs text-text-secondary">Due {formatDate(order.deliveryDate)}</p>
         </div>
 
         <span
@@ -93,15 +90,9 @@ function OrderCard({ order, onRateClient }: OrderCardProps): React.JSX.Element {
         </span>
 
         <div className="flex items-center gap-1">
-          {isCompleted && (
-            alreadyRated ? (
-              <span
-                className={cn(
-                  "p-2 rounded-lg",
-                  "text-success"
-                )}
-                title="Client rated"
-              >
+          {isCompleted &&
+            (alreadyRated ? (
+              <span className={cn("p-2 rounded-lg", "text-success")} title="Client rated">
                 <Icon path={ICON_PATHS.star} size="sm" />
               </span>
             ) : (
@@ -117,8 +108,7 @@ function OrderCard({ order, onRateClient }: OrderCardProps): React.JSX.Element {
               >
                 <Icon path={ICON_PATHS.star} size="sm" />
               </button>
-            )
-          )}
+            ))}
 
           <Link
             href={`/app/chat/${getChatIdByOrderId(order.id)}`}
@@ -169,7 +159,11 @@ interface ServiceActionsProps {
   onDelete: () => void;
 }
 
-function ServiceActions({ service, onStatusChange, onDelete }: ServiceActionsProps): React.JSX.Element {
+function ServiceActions({
+  service,
+  onStatusChange,
+  onDelete,
+}: ServiceActionsProps): React.JSX.Element {
   return (
     <div className={NEUMORPHIC_CARD}>
       <h2 className="text-lg font-semibold text-text-primary mb-4">Actions</h2>
@@ -240,6 +234,8 @@ export default function ServiceDetailsPage({ params }: PageProps): React.JSX.Ele
   const [ratingOrder, setRatingOrder] = useState<ServiceOrder | null>(null);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [, forceUpdate] = useState(0);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const orders = getOrdersByServiceId(id);
 
   function handleStatusChange(newStatus: ServiceStatus): void {
@@ -249,9 +245,15 @@ export default function ServiceDetailsPage({ params }: PageProps): React.JSX.Ele
   }
 
   function handleDelete(): void {
-    if (confirm("Are you sure you want to delete this service? This action cannot be undone.")) {
-      router.push("/app/freelancer/services");
-    }
+    setDeleteModalOpen(true);
+  }
+
+  async function handleConfirmDelete(): Promise<void> {
+    setIsDeleting(true);
+    await new Promise((r) => setTimeout(r, 250));
+    setIsDeleting(false);
+    setDeleteModalOpen(false);
+    router.push("/app/freelancer/services");
   }
 
   function handleRateClient(order: ServiceOrder): void {
@@ -277,9 +279,7 @@ export default function ServiceDetailsPage({ params }: PageProps): React.JSX.Ele
           >
             <Icon path={ICON_PATHS.briefcase} size="xl" className="text-text-secondary" />
           </div>
-          <h2 className="text-xl font-bold text-text-primary mb-2">
-            Service not found
-          </h2>
+          <h2 className="text-xl font-bold text-text-primary mb-2">Service not found</h2>
           <p className="text-text-secondary mb-4">
             The service you are looking for does not exist or has been removed.
           </p>
@@ -291,12 +291,27 @@ export default function ServiceDetailsPage({ params }: PageProps): React.JSX.Ele
             Back to Services
           </button>
         </div>
+
+        <ConfirmationModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => setDeleteModalOpen(false)}
+          onConfirm={handleConfirmDelete}
+          title="Delete Service?"
+          message="Are you sure you want to delete this service? This action cannot be undone."
+          confirmText="Delete"
+          cancelText="Cancel"
+          variant="danger"
+          icon={ICON_PATHS.trash}
+          isLoading={isDeleting}
+        />
       </div>
     );
   }
 
   const activeOrders = orders.filter((o) => o.status === "in_progress" || o.status === "pending");
-  const completedOrders = orders.filter((o) => o.status === "completed" || o.status === "delivered");
+  const completedOrders = orders.filter(
+    (o) => o.status === "completed" || o.status === "delivered"
+  );
 
   return (
     <div className="space-y-4">
@@ -306,9 +321,7 @@ export default function ServiceDetailsPage({ params }: PageProps): React.JSX.Ele
         </Link>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-2xl font-bold text-text-primary truncate">
-              {service.title}
-            </h1>
+            <h1 className="text-2xl font-bold text-text-primary truncate">{service.title}</h1>
             <span
               className={cn(
                 "px-3 py-1 rounded-lg text-sm font-medium flex-shrink-0",
@@ -327,9 +340,7 @@ export default function ServiceDetailsPage({ params }: PageProps): React.JSX.Ele
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
         <div className="xl:col-span-2 space-y-4">
           <div className={NEUMORPHIC_CARD}>
-            <h2 className="text-lg font-semibold text-text-primary mb-4">
-              Service Details
-            </h2>
+            <h2 className="text-lg font-semibold text-text-primary mb-4">Service Details</h2>
             <div className="space-y-4">
               <div>
                 <p className="text-text-secondary text-sm mb-1">Description</p>
@@ -369,11 +380,7 @@ export default function ServiceDetailsPage({ params }: PageProps): React.JSX.Ele
               </h2>
               <div className="space-y-3">
                 {activeOrders.map((order) => (
-                  <OrderCard
-                    key={order.id}
-                    order={order}
-                    onRateClient={handleRateClient}
-                  />
+                  <OrderCard key={order.id} order={order} onRateClient={handleRateClient} />
                 ))}
               </div>
             </div>
@@ -386,11 +393,7 @@ export default function ServiceDetailsPage({ params }: PageProps): React.JSX.Ele
               </h2>
               <div className="space-y-3">
                 {completedOrders.map((order) => (
-                  <OrderCard
-                    key={order.id}
-                    order={order}
-                    onRateClient={handleRateClient}
-                  />
+                  <OrderCard key={order.id} order={order} onRateClient={handleRateClient} />
                 ))}
               </div>
             </div>
@@ -398,14 +401,8 @@ export default function ServiceDetailsPage({ params }: PageProps): React.JSX.Ele
 
           {orders.length === 0 && (
             <div className={cn(NEUMORPHIC_CARD, "text-center py-8")}>
-              <Icon
-                path={ICON_PATHS.users}
-                size="xl"
-                className="text-gray-300 mx-auto mb-3"
-              />
-              <h3 className="text-lg font-medium text-text-primary mb-1">
-                No orders yet
-              </h3>
+              <Icon path={ICON_PATHS.users} size="xl" className="text-gray-300 mx-auto mb-3" />
+              <h3 className="text-lg font-medium text-text-primary mb-1">No orders yet</h3>
               <p className="text-text-secondary text-sm">
                 Orders from clients will appear here once they start coming in.
               </p>
@@ -421,9 +418,7 @@ export default function ServiceDetailsPage({ params }: PageProps): React.JSX.Ele
           />
 
           <div className={NEUMORPHIC_CARD}>
-            <h2 className="text-lg font-semibold text-text-primary mb-4">
-              Statistics
-            </h2>
+            <h2 className="text-lg font-semibold text-text-primary mb-4">Statistics</h2>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-text-secondary">Total Earnings</span>
@@ -433,9 +428,7 @@ export default function ServiceDetailsPage({ params }: PageProps): React.JSX.Ele
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-text-secondary">Active Orders</span>
-                <span className="font-semibold text-text-primary">
-                  {activeOrders.length}
-                </span>
+                <span className="font-semibold text-text-primary">{activeOrders.length}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-text-secondary">Completion Rate</span>
@@ -466,6 +459,18 @@ export default function ServiceDetailsPage({ params }: PageProps): React.JSX.Ele
           onClose={() => setShowSuccessToast(false)}
         />
       )}
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Service?"
+        message="Are you sure you want to delete this service? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="danger"
+        icon={ICON_PATHS.trash}
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

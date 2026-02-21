@@ -5,6 +5,7 @@ import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { useModeStore } from "@/stores/mode-store";
 import { Icon, ICON_PATHS } from "@/components/ui/Icon";
+import { ConfirmationModal } from "@/components/ui/ConfirmationModal";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { NEUMORPHIC_CARD, NEUMORPHIC_INSET, ICON_BUTTON, PRIMARY_BUTTON } from "@/lib/styles";
@@ -20,7 +21,12 @@ interface OfferRowProps {
 
 function OfferRow({ offer, onDelete }: OfferRowProps): React.JSX.Element {
   return (
-    <div className={cn("flex flex-col sm:flex-row sm:items-center gap-4 p-4 rounded-xl", NEUMORPHIC_INSET)}>
+    <div
+      className={cn(
+        "flex flex-col sm:flex-row sm:items-center gap-4 p-4 rounded-xl",
+        NEUMORPHIC_INSET
+      )}
+    >
       <div className="flex-1 min-w-0">
         <Link
           href={`/app/client/offers/${offer.id}`}
@@ -79,10 +85,23 @@ export default function ManageOffersPage(): React.JSX.Element {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
+
   function handleDelete(id: string): void {
-    if (confirm("Are you sure you want to delete this offer?")) {
-      setOffers((prev) => prev.filter((o) => o.id !== id));
-    }
+    setDeleteTarget(id);
+    setDeleteModalOpen(true);
+  }
+
+  async function handleConfirmDelete(): Promise<void> {
+    if (!deleteTarget) return;
+    setIsConfirming(true);
+    await new Promise((r) => setTimeout(r, 250));
+    setOffers((prev) => prev.filter((o) => o.id !== deleteTarget));
+    setIsConfirming(false);
+    setDeleteTarget(null);
+    setDeleteModalOpen(false);
   }
 
   const filteredOffers = filter === "all" ? offers : offers.filter((o) => o.status === filter);
@@ -133,6 +152,18 @@ export default function ManageOffersPage(): React.JSX.Element {
           </div>
         )}
       </div>
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Offer?"
+        message="Are you sure you want to delete this offer?"
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="danger"
+        icon={ICON_PATHS.trash}
+        isLoading={isConfirming}
+      />
     </div>
   );
 }
