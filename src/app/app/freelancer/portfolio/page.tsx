@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { cn } from "@/lib/cn";
 import { Icon, ICON_PATHS, LoadingSpinner } from "@/components/ui/Icon";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ImageUpload } from "@/components/ui/ImageUpload";
 import {
   NEUMORPHIC_CARD,
   NEUMORPHIC_INPUT,
@@ -107,11 +108,7 @@ function PortfolioCard({
     <div className={cn(NEUMORPHIC_CARD, "overflow-hidden p-0")}>
       {item.images.length > 0 ? (
         <div className="relative h-48 bg-gray-100">
-          <img
-            src={item.images[0]}
-            alt={item.title}
-            className="w-full h-full object-cover"
-          />
+          <img src={item.images[0]} alt={item.title} className="w-full h-full object-cover" />
           {item.images.length > 1 && (
             <span className="absolute bottom-2 right-2 px-2 py-1 bg-black/60 text-white text-xs rounded-lg">
               +{item.images.length - 1} more
@@ -125,9 +122,7 @@ function PortfolioCard({
       )}
 
       <div className="p-4">
-        <h3 className="font-semibold text-text-primary mb-1 line-clamp-1">
-          {item.title}
-        </h3>
+        <h3 className="font-semibold text-text-primary mb-1 line-clamp-1">{item.title}</h3>
         <p className="text-sm text-text-secondary line-clamp-2 mb-3">
           {item.description || "No description"}
         </p>
@@ -150,11 +145,7 @@ function PortfolioCard({
               type="button"
               onClick={onMoveUp}
               disabled={isFirst}
-              className={cn(
-                ICON_BUTTON,
-                "w-8 h-8",
-                isFirst && "opacity-40 cursor-not-allowed"
-              )}
+              className={cn(ICON_BUTTON, "w-8 h-8", isFirst && "opacity-40 cursor-not-allowed")}
               title="Move up"
             >
               <Icon path={ICON_PATHS.arrowUp} size="sm" />
@@ -163,11 +154,7 @@ function PortfolioCard({
               type="button"
               onClick={onMoveDown}
               disabled={isLast}
-              className={cn(
-                ICON_BUTTON,
-                "w-8 h-8",
-                isLast && "opacity-40 cursor-not-allowed"
-              )}
+              className={cn(ICON_BUTTON, "w-8 h-8", isLast && "opacity-40 cursor-not-allowed")}
               title="Move down"
             >
               <Icon path={ICON_PATHS.arrowDown} size="sm" />
@@ -186,10 +173,7 @@ function PortfolioCard({
             <button
               type="button"
               onClick={onDelete}
-              className={cn(
-                ICON_BUTTON,
-                "w-8 h-8 text-error hover:bg-error/10"
-              )}
+              className={cn(ICON_BUTTON, "w-8 h-8 text-error hover:bg-error/10")}
               title="Delete"
             >
               <Icon path={ICON_PATHS.trash} size="sm" />
@@ -207,10 +191,8 @@ interface PortfolioFormProps {
   isEditing: boolean;
   isLoading: boolean;
   onSubmit: (e: React.FormEvent) => void;
-  onChange: (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => void;
-  onImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  onUpload: (files: File[]) => void;
   onRemoveImage: (index: number) => void;
   onCancel: () => void;
 }
@@ -222,7 +204,7 @@ function PortfolioForm({
   isLoading,
   onSubmit,
   onChange,
-  onImageUpload,
+  onUpload,
   onRemoveImage,
   onCancel,
 }: PortfolioFormProps): React.JSX.Element {
@@ -247,15 +229,11 @@ function PortfolioForm({
             className={cn(NEUMORPHIC_INPUT, errors.title && INPUT_ERROR_STYLES)}
             placeholder="Project title"
           />
-          {errors.title && (
-            <p className="mt-1 text-xs text-error">{errors.title}</p>
-          )}
+          {errors.title && <p className="mt-1 text-xs text-error">{errors.title}</p>}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-text-primary mb-1">
-            Description
-          </label>
+          <label className="block text-sm font-medium text-text-primary mb-1">Description</label>
           <textarea
             name="description"
             value={formData.description}
@@ -269,9 +247,7 @@ function PortfolioForm({
             placeholder="Describe your project..."
           />
           <div className="flex justify-between mt-1">
-            {errors.description && (
-              <p className="text-xs text-error">{errors.description}</p>
-            )}
+            {errors.description && <p className="text-xs text-error">{errors.description}</p>}
             <p className="text-xs text-text-secondary ml-auto">
               {formData.description.length}/{MAX_DESCRIPTION_LENGTH}
             </p>
@@ -279,9 +255,7 @@ function PortfolioForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-text-primary mb-1">
-            Project Link
-          </label>
+          <label className="block text-sm font-medium text-text-primary mb-1">Project Link</label>
           <input
             type="url"
             name="link"
@@ -290,18 +264,19 @@ function PortfolioForm({
             className={cn(NEUMORPHIC_INPUT, errors.link && INPUT_ERROR_STYLES)}
             placeholder="https://example.com/project"
           />
-          {errors.link && (
-            <p className="mt-1 text-xs text-error">{errors.link}</p>
-          )}
+          {errors.link && <p className="mt-1 text-xs text-error">{errors.link}</p>}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-text-primary mb-1">
-            Images ({formData.images.length}/{MAX_IMAGES_PER_ITEM})
-          </label>
+          <ImageUpload
+            variant="multiple"
+            label={`Images (${formData.images.length}/${MAX_IMAGES_PER_ITEM})`}
+            onUpload={onUpload}
+            error={errors.images}
+          />
 
           {formData.images.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-3">
+            <div className="flex flex-wrap gap-2 mt-3">
               {formData.images.map((image, index) => (
                 <div key={index} className="relative group">
                   <img
@@ -312,43 +287,13 @@ function PortfolioForm({
                   <button
                     type="button"
                     onClick={() => onRemoveImage(index)}
-                    className="absolute -top-2 -right-2 w-5 h-5 bg-error text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                    className="absolute -top-2 -right-2 w-5 h-5 bg-error text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shadow-md"
                   >
                     <Icon path={ICON_PATHS.close} size="sm" />
                   </button>
                 </div>
               ))}
             </div>
-          )}
-
-          {formData.images.length < MAX_IMAGES_PER_ITEM && (
-            <>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept={ALLOWED_IMAGE_TYPES.join(",")}
-                onChange={onImageUpload}
-                className="hidden"
-                multiple
-              />
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className={cn(
-                  SECONDARY_BUTTON_STYLES,
-                  "flex items-center gap-2"
-                )}
-              >
-                <Icon path={ICON_PATHS.upload} size="sm" />
-                Upload Images
-              </button>
-              <p className="mt-1 text-xs text-text-secondary">
-                JPG, PNG, GIF or WebP. Max {MAX_FILE_SIZE / 1024 / 1024}MB each.
-              </p>
-            </>
-          )}
-          {errors.images && (
-            <p className="mt-1 text-xs text-error">{errors.images}</p>
           )}
         </div>
 
@@ -388,12 +333,9 @@ function DeleteConfirmModal({
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className={cn(NEUMORPHIC_CARD, "max-w-md w-full mx-4")}>
-        <h3 className="text-lg font-semibold text-text-primary mb-2">
-          Delete Project
-        </h3>
+        <h3 className="text-lg font-semibold text-text-primary mb-2">Delete Project</h3>
         <p className="text-text-secondary mb-4">
-          Are you sure you want to delete &quot;{itemTitle}&quot;? This action cannot be
-          undone.
+          Are you sure you want to delete &quot;{itemTitle}&quot;? This action cannot be undone.
         </p>
         <div className="flex items-center justify-end gap-3">
           <button type="button" onClick={onCancel} className={SECONDARY_BUTTON_STYLES}>
@@ -425,9 +367,7 @@ export default function PortfolioPage(): React.JSX.Element {
     setTimeout(() => setShowSuccess(false), SUCCESS_MESSAGE_DURATION);
   }
 
-  function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ): void {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name as keyof PortfolioFormErrors]) {
@@ -435,30 +375,11 @@ export default function PortfolioPage(): React.JSX.Element {
     }
   }
 
-  function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>): void {
-    const files = e.target.files;
-    if (!files) return;
-
+  function handleUpload(files: File[]): void {
     const remainingSlots = MAX_IMAGES_PER_ITEM - formData.images.length;
-    const filesToProcess = Array.from(files).slice(0, remainingSlots);
+    const filesToProcess = files.slice(0, remainingSlots);
 
     filesToProcess.forEach((file) => {
-      if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-        setErrors((prev) => ({
-          ...prev,
-          images: "Invalid file type. Please upload JPG, PNG, GIF or WebP.",
-        }));
-        return;
-      }
-
-      if (file.size > MAX_FILE_SIZE) {
-        setErrors((prev) => ({
-          ...prev,
-          images: `File too large. Max size is ${MAX_FILE_SIZE / 1024 / 1024}MB.`,
-        }));
-        return;
-      }
-
       const reader = new FileReader();
       reader.onloadend = () => {
         setFormData((prev) => ({
@@ -468,8 +389,6 @@ export default function PortfolioPage(): React.JSX.Element {
       };
       reader.readAsDataURL(file);
     });
-
-    e.target.value = "";
   }
 
   function handleRemoveImage(index: number): void {
@@ -575,9 +494,7 @@ export default function PortfolioPage(): React.JSX.Element {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-text-primary">Portfolio</h1>
-          <p className="text-text-secondary text-sm">
-            Showcase your best work to attract clients
-          </p>
+          <p className="text-text-secondary text-sm">Showcase your best work to attract clients</p>
         </div>
         <div className="flex items-center gap-3">
           {showSuccess && (
@@ -614,7 +531,7 @@ export default function PortfolioPage(): React.JSX.Element {
           isLoading={isLoading}
           onSubmit={handleSubmit}
           onChange={handleChange}
-          onImageUpload={handleImageUpload}
+          onUpload={handleUpload}
           onRemoveImage={handleRemoveImage}
           onCancel={handleCancelForm}
         />

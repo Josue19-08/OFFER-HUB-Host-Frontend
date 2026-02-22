@@ -10,6 +10,7 @@ import {
   INPUT_ERROR_STYLES,
   PRIMARY_BUTTON,
 } from "@/lib/styles";
+import { ImageUpload } from "@/components/ui/ImageUpload";
 
 interface ProfileFormData {
   firstName: string;
@@ -122,16 +123,9 @@ function validateProfileForm(formData: ProfileFormData): FormErrors {
   return errors;
 }
 
-const PHOTO_BUTTON_STYLES = cn(
-  "px-4 py-2 text-sm font-medium rounded-xl",
-  "bg-background text-text-primary",
-  "shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]",
-  "hover:shadow-[2px_2px_4px_#d1d5db,-2px_-2px_4px_#ffffff]",
-  "active:shadow-[inset_2px_2px_4px_#d1d5db,inset_-2px_-2px_4px_#ffffff]",
-  "transition-all duration-200 cursor-pointer"
-);
+const PHOTO_SECTION_STYLES = cn("flex items-center gap-4 py-2");
 
-const AVATAR_STYLES = cn(
+const AVATAR_PLACEHOLDER_STYLES = cn(
   "w-18 h-18 rounded-full flex items-center justify-center",
   "bg-primary text-white text-xl font-bold",
   "shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]"
@@ -143,6 +137,7 @@ export default function ProfilePage(): React.JSX.Element {
   const [showSuccess, setShowSuccess] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [formData, setFormData] = useState<ProfileFormData>(INITIAL_FORM_DATA);
+  const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -165,6 +160,12 @@ export default function ProfilePage(): React.JSX.Element {
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name as keyof FormErrors]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
+  }
+
+  function handlePhotoUpload(files: File[]): void {
+    if (files.length > 0) {
+      setProfilePhoto(files[0]);
     }
   }
 
@@ -212,19 +213,7 @@ export default function ProfilePage(): React.JSX.Element {
 
       <div className={NEUMORPHIC_CARD}>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex items-center gap-4">
-            <div className={AVATAR_STYLES}>
-              {formData.firstName.charAt(0).toUpperCase()}
-              {formData.lastName.charAt(0).toUpperCase()}
-            </div>
-            <div className="flex-1">
-              <h3 className="font-medium text-text-primary text-sm">Profile Photo</h3>
-              <p className="text-xs text-text-secondary">JPG, PNG or GIF. Max 2MB.</p>
-            </div>
-            <button type="button" className={PHOTO_BUTTON_STYLES}>
-              Change Photo
-            </button>
-          </div>
+          <ImageUpload variant="single" label="Profile Photo" onUpload={handlePhotoUpload} />
 
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
             <FormInput

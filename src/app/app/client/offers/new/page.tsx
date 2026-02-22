@@ -15,6 +15,7 @@ import {
 import { Icon, ICON_PATHS, LoadingSpinner } from "@/components/ui/Icon";
 import { FormField } from "@/components/ui/FormField";
 import { AttachmentPreview } from "@/components/offers/AttachmentPreview";
+import { ImageUpload } from "@/components/ui/ImageUpload";
 import type { Attachment, FormErrors, OfferFormData } from "@/types/client-offer.types";
 import {
   CATEGORIES,
@@ -44,48 +45,24 @@ export default function CreateOfferPage(): React.JSX.Element {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>): void {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-
-    setAttachmentError(null);
-
+  function handleUpload(files: File[]): void {
     if (attachments.length + files.length > MAX_ATTACHMENTS) {
       setAttachmentError(`Maximum ${MAX_ATTACHMENTS} attachments allowed`);
       return;
     }
 
-    const newAttachments: Attachment[] = [];
-
-    Array.from(files).forEach((file) => {
-      if (file.size > MAX_FILE_SIZE) {
-        setAttachmentError(`File "${file.name}" exceeds 10MB limit`);
-        return;
-      }
-
+    setAttachmentError(null);
+    const newAttachments: Attachment[] = files.map((file) => {
       const isImage = ALLOWED_IMAGE_TYPES.includes(file.type);
-      const isDoc = ALLOWED_DOC_TYPES.includes(file.type);
-
-      if (!isImage && !isDoc) {
-        setAttachmentError(`File "${file.name}" is not a supported format`);
-        return;
-      }
-
-      const attachment: Attachment = {
+      return {
         id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         file,
         type: isImage ? "image" : "document",
         preview: isImage ? URL.createObjectURL(file) : undefined,
       };
-
-      newAttachments.push(attachment);
     });
 
     setAttachments((prev) => [...prev, ...newAttachments]);
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
   }
 
   function removeAttachment(id: string): void {
@@ -204,34 +181,12 @@ export default function CreateOfferPage(): React.JSX.Element {
                 Add images or documents to help freelancers understand your project better.
               </p>
 
-              <div
-                onClick={() => canAddMoreFiles && fileInputRef.current?.click()}
-                className={cn(
-                  "border-2 border-dashed border-border-light rounded-xl p-8",
-                  "flex flex-col items-center justify-center gap-3",
-                  "cursor-pointer",
-                  "hover:border-primary/50 hover:bg-primary/5",
-                  "transition-all duration-200",
-                  !canAddMoreFiles && "opacity-50 pointer-events-none"
-                )}
-              >
-                <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Icon path={ICON_PATHS.image} size="lg" className="text-primary" />
-                </div>
-                <p className="text-sm text-text-primary font-medium">Click to upload files</p>
-                <p className="text-xs text-text-secondary">PNG, JPG, GIF, PDF, DOC up to 10MB each</p>
-              </div>
-
-              <input
-                ref={fileInputRef}
-                type="file"
-                multiple
-                accept="image/jpeg,image/png,image/gif,image/webp,.pdf,.doc,.docx,.txt"
-                onChange={handleFileSelect}
-                className="hidden"
+              <ImageUpload
+                variant="multiple"
+                allowedTypes={[...ALLOWED_IMAGE_TYPES, ...ALLOWED_DOC_TYPES]}
+                onUpload={handleUpload}
+                error={attachmentError || undefined}
               />
-
-              {attachmentError && <p className="mt-3 text-sm text-error">{attachmentError}</p>}
 
               {attachments.length > 0 && (
                 <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
@@ -293,7 +248,11 @@ export default function CreateOfferPage(): React.JSX.Element {
             <div className={NEUMORPHIC_CARD}>
               <h2 className="text-lg font-semibold text-text-primary mb-4">Actions</h2>
               <div className="space-y-3">
-                <button type="submit" disabled={isLoading} className={cn(PRIMARY_BUTTON, "w-full justify-center")}>
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className={cn(PRIMARY_BUTTON, "w-full justify-center")}
+                >
                   {isLoading ? (
                     <span className="flex items-center gap-2 justify-center">
                       <LoadingSpinner />
