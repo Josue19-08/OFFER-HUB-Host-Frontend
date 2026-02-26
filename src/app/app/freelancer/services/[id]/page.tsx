@@ -234,7 +234,9 @@ export default function ServiceDetailsPage({ params }: PageProps): React.JSX.Ele
   const [service, setService] = useState<Service | undefined>(initialService);
   const [ratingOrder, setRatingOrder] = useState<ServiceOrder | null>(null);
   const [showRatingSuccessToast, setShowRatingSuccessToast] = useState(false);
-  const [showUpdateSuccessToast, setShowUpdateSuccessToast] = useState(false);
+  const [showUpdateSuccessToast, setShowUpdateSuccessToast] = useState(
+    () => searchParams.get("updated") === "true"
+  );
   const [, forceUpdate] = useState(0);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -242,7 +244,6 @@ export default function ServiceDetailsPage({ params }: PageProps): React.JSX.Ele
 
   useEffect(() => {
     if (searchParams.get("updated") === "true") {
-      setShowUpdateSuccessToast(true);
       router.replace(`/app/freelancer/services/${id}`);
     }
   }, [id, router, searchParams]);
@@ -254,15 +255,19 @@ export default function ServiceDetailsPage({ params }: PageProps): React.JSX.Ele
   }
 
   function handleDelete(): void {
+    if (!service) return;
     setDeleteModalOpen(true);
   }
 
   async function handleConfirmDelete(): Promise<void> {
+    if (!service) return;
+
+    const deletedServiceName = service.title;
     setIsDeleting(true);
     await new Promise((r) => setTimeout(r, 250));
     setIsDeleting(false);
     setDeleteModalOpen(false);
-    router.push("/app/freelancer/services");
+    router.push(`/app/freelancer/services?deleted=${encodeURIComponent(deletedServiceName)}`);
   }
 
   function handleRateClient(order: ServiceOrder): void {
@@ -277,7 +282,7 @@ export default function ServiceDetailsPage({ params }: PageProps): React.JSX.Ele
 
   if (!service) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className="flex items-center justify-center min-h-100">
         <div className={cn(NEUMORPHIC_CARD, "text-center max-w-md")}>
           <div
             className={cn(
@@ -301,18 +306,6 @@ export default function ServiceDetailsPage({ params }: PageProps): React.JSX.Ele
           </button>
         </div>
 
-        <ConfirmationModal
-          isOpen={isDeleteModalOpen}
-          onClose={() => setDeleteModalOpen(false)}
-          onConfirm={handleConfirmDelete}
-          title="Delete Service?"
-          message="Are you sure you want to delete this service? This action cannot be undone."
-          confirmText="Delete"
-          cancelText="Cancel"
-          variant="danger"
-          icon={ICON_PATHS.trash}
-          isLoading={isDeleting}
-        />
       </div>
     );
   }
@@ -481,7 +474,7 @@ export default function ServiceDetailsPage({ params }: PageProps): React.JSX.Ele
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
         title="Delete Service?"
-        message="Are you sure you want to delete this service? This action cannot be undone."
+        message={`Are you sure you want to delete "${service.title}"? This action cannot be undone.`}
         confirmText="Delete"
         cancelText="Cancel"
         variant="danger"

@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { Icon, ICON_PATHS } from "@/components/ui/Icon";
 import { ConfirmationModal } from "@/components/ui/ConfirmationModal";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { Toast } from "@/components/ui/Toast";
 import { NEUMORPHIC_CARD, PRIMARY_BUTTON } from "@/lib/styles";
 import { MOCK_SERVICES, SERVICE_CATEGORIES } from "@/data/service.data";
 import type { Service, ServiceStatus } from "@/types/service.types";
@@ -28,7 +30,7 @@ function getCategoryLabel(value: string): string {
 
 interface ServiceCardProps {
   service: Service;
-  onDelete: (id: string) => void;
+  onDelete: (id: string, name: string) => void;
 }
 
 function ServiceCard({ service, onDelete }: ServiceCardProps): React.JSX.Element {
@@ -45,7 +47,7 @@ function ServiceCard({ service, onDelete }: ServiceCardProps): React.JSX.Element
             </Link>
             <span
               className={cn(
-                "px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0",
+                "px-2 py-0.5 rounded-full text-xs font-medium shrink-0",
                 STATUS_STYLES[service.status]
               )}
             >
@@ -95,7 +97,7 @@ function ServiceCard({ service, onDelete }: ServiceCardProps): React.JSX.Element
           </Link>
           <button
             type="button"
-            onClick={() => onDelete(service.id)}
+            onClick={() => onDelete(service.id, service.title)}
             className={cn(
               "p-2 rounded-lg",
               "text-text-secondary hover:text-error hover:bg-error/10",
@@ -111,27 +113,58 @@ function ServiceCard({ service, onDelete }: ServiceCardProps): React.JSX.Element
   );
 }
 
+const INITIAL_DELETE_MODAL_STATE = {
+  isOpen: false,
+  serviceId: null as string | null,
+  serviceName: "",
+};
+
 export default function ServicesPage(): React.JSX.Element {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [services, setServices] = useState<Service[]>(MOCK_SERVICES);
-
-  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
-  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteModalState, setDeleteModalState] = useState(INITIAL_DELETE_MODAL_STATE);
   const [isConfirming, setIsConfirming] = useState(false);
+  const [localSuccessToastMessage, setLocalSuccessToastMessage] = useState("");
 
-  function handleDelete(id: string) {
-    setDeleteTarget(id);
-    setDeleteModalOpen(true);
+  const deletedServiceNameFromQuery = searchParams.get("deleted");
+  const querySuccessToastMessage = deletedServiceNameFromQuery
+    ? `Service "${deletedServiceNameFromQuery}" deleted successfully.`
+    : "";
+  const successToastMessage = localSuccessToastMessage || querySuccessToastMessage;
+
+  function openDeleteModal(id: string, name: string): void {
+    setDeleteModalState({
+      isOpen: true,
+      serviceId: id,
+      serviceName: name,
+    });
   }
 
   async function handleConfirmDelete(): Promise<void> {
-    if (!deleteTarget) return;
+    if (!deleteModalState.serviceId) return;
+
+    const deletedServiceName = deleteModalState.serviceName;
     setIsConfirming(true);
+
     // small delay to show spinner in UI and mimic async
     await new Promise((r) => setTimeout(r, 250));
-    setServices((prev) => prev.filter((s) => s.id !== deleteTarget));
+
+    setServices((prev) => prev.filter((s) => s.id !== deleteModalState.serviceId));
     setIsConfirming(false);
-    setDeleteTarget(null);
-    setDeleteModalOpen(false);
+    setDeleteModalState(INITIAL_DELETE_MODAL_STATE);
+    setLocalSuccessToastMessage(`Service "${deletedServiceName}" deleted successfully.`);
+  }
+
+  function handleToastClose(): void {
+    if (localSuccessToastMessage) {
+      setLocalSuccessToastMessage("");
+      return;
+    }
+
+    if (deletedServiceNameFromQuery) {
+      router.replace("/app/freelancer/services");
+    }
   }
 
   return (
@@ -162,23 +195,27 @@ export default function ServicesPage(): React.JSX.Element {
       ) : (
         <div className="space-y-4">
           {services.map((service) => (
-            <ServiceCard key={service.id} service={service} onDelete={handleDelete} />
+            <ServiceCard key={service.id} service={service} onDelete={openDeleteModal} />
           ))}
         </div>
       )}
 
       <ConfirmationModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setDeleteModalOpen(false)}
+        isOpen={deleteModalState.isOpen}
+        onClose={() => setDeleteModalState(INITIAL_DELETE_MODAL_STATE)}
         onConfirm={handleConfirmDelete}
         title="Delete Service?"
-        message="Are you sure you want to delete this service? This action cannot be undone."
+        message={`Are you sure you want to delete "${deleteModalState.serviceName}"? This action cannot be undone.`}
         confirmText="Delete"
         cancelText="Cancel"
         variant="danger"
         icon={ICON_PATHS.trash}
         isLoading={isConfirming}
       />
+
+      {successToastMessage && (
+        <Toast message={successToastMessage} type="success" onClose={handleToastClose} />
+      )}
     </div>
   );
 }
