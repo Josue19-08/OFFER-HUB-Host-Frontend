@@ -125,21 +125,8 @@ export default function ClientPurchasesPage() {
         <EmptyState
           icon={ICON_PATHS.shoppingCart}
           message={statusFilter ? "No purchases match this filter" : "You haven't hired any services yet"}
-          action={
-            <Link
-              href="/marketplace/services"
-              className={cn(
-                "inline-flex items-center gap-2 px-6 py-3 rounded-xl",
-                "bg-primary text-white font-medium",
-                "shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]",
-                "hover:shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff]",
-                "transition-all duration-200"
-              )}
-            >
-              <Icon path={ICON_PATHS.search} size="sm" />
-              <span>Browse Services</span>
-            </Link>
-          }
+          linkHref="/marketplace/services"
+          linkText="Browse Services"
         />
       ) : (
         <div className="space-y-4">
