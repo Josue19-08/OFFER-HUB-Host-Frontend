@@ -9,6 +9,7 @@ import { Icon, ICON_PATHS, LoadingSpinner } from "@/components/ui/Icon";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Toast } from "@/components/ui/Toast";
 import { Navbar } from "@/components/landing/Navbar";
+import { HireServiceModal } from "@/components/marketplace/HireServiceModal";
 import { useAuthStore } from "@/stores/auth-store";
 import { cn } from "@/lib/cn";
 
@@ -33,7 +34,7 @@ export default function ServiceDetailPage(): React.JSX.Element {
   const [service, setService] = useState<MarketplaceService | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isHiring, setIsHiring] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   useEffect(() => {
@@ -214,53 +215,20 @@ export default function ServiceDetailPage(): React.JSX.Element {
 
               {/* Hire Button */}
               {isAuthenticated ? (
-                <>
-                  <button
-                    onClick={async () => {
-                      if (!token) {
-                        router.push(`/login?redirect=/marketplace/services/${serviceId}`);
-                        return;
-                      }
-
-                      setIsHiring(true);
-                      try {
-                        const order = await hireService(token, serviceId);
-                        // Success - redirect to order page
-                        router.push(`/app/orders/${order.id}`);
-                      } catch (error) {
-                        console.error('Failed to hire service:', error);
-                        setToast({
-                          message: error instanceof Error ? error.message : 'Failed to hire service',
-                          type: 'error',
-                        });
-                      } finally {
-                        setIsHiring(false);
-                      }
-                    }}
-                    disabled={isHiring}
-                    className={cn(
-                      "w-full py-3 px-6 rounded-xl flex items-center justify-center gap-2",
-                      "bg-primary text-white font-medium",
-                      "shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]",
-                      "hover:shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff]",
-                      "active:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.2)]",
-                      "disabled:opacity-50 disabled:cursor-not-allowed",
-                      "transition-all duration-200"
-                    )}
-                  >
-                    {isHiring ? (
-                      <>
-                        <LoadingSpinner size="sm" />
-                        <span>Hiring...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>Hire This Service</span>
-                        <Icon path={ICON_PATHS.chevronRight} size="sm" />
-                      </>
-                    )}
-                  </button>
-                </>
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className={cn(
+                    "w-full py-3 px-6 rounded-xl flex items-center justify-center gap-2",
+                    "bg-primary text-white font-medium",
+                    "shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]",
+                    "hover:shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff]",
+                    "active:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.2)]",
+                    "transition-all duration-200"
+                  )}
+                >
+                  <span>Hire This Service</span>
+                  <Icon path={ICON_PATHS.chevronRight} size="sm" />
+                </button>
               ) : (
                 <>
                   <Link
@@ -356,6 +324,41 @@ export default function ServiceDetailPage(): React.JSX.Element {
           message={toast.message}
           type={toast.type}
           onClose={() => setToast(null)}
+        />
+      )}
+
+      {/* Hire Service Modal */}
+      {service && (
+        <HireServiceModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          service={service}
+          onSubmit={async (requirements) => {
+            if (!token) {
+              router.push(`/login?redirect=/marketplace/services/${serviceId}`);
+              return;
+            }
+
+            try {
+              const order = await hireService(token, serviceId, requirements);
+              setIsModalOpen(false);
+              setToast({
+                message: 'Order created successfully! Redirecting...',
+                type: 'success',
+              });
+              // Redirect to order page after a brief delay
+              setTimeout(() => {
+                router.push(`/app/orders/${order.id}`);
+              }, 1000);
+            } catch (error) {
+              console.error('Failed to hire service:', error);
+              setToast({
+                message: error instanceof Error ? error.message : 'Failed to hire service',
+                type: 'error',
+              });
+              throw error; // Re-throw to keep modal open
+            }
+          }}
         />
       )}
     </>

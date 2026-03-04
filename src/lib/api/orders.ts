@@ -239,3 +239,38 @@ export async function markOrderCompleted(token: string, orderId: string): Promis
   const data = await response.json();
   return data.data || data;
 }
+
+// =====================
+// My Purchases (Service Orders)
+// =====================
+
+export interface PurchasesResponse {
+  data: Order[];
+  hasMore: boolean;
+  nextCursor?: string;
+}
+
+export async function getMyPurchases(token: string, filters?: {
+  status?: string;
+  limit?: number;
+  cursor?: string;
+}): Promise<PurchasesResponse> {
+  const query = new URLSearchParams();
+
+  if (filters?.status) query.append('status', filters.status);
+  if (filters?.limit) query.append('limit', filters.limit.toString());
+  if (filters?.cursor) query.append('cursor', filters.cursor);
+
+  const response = await fetch(`${API_URL}/orders/my-purchases?${query.toString()}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error?.message || 'Failed to fetch purchases');
+  }
+
+  const responseData = await response.json();
+  // Backend wraps response: { data: { data: Order[], hasMore, nextCursor }, meta: {...} }
+  return responseData.data;
+}

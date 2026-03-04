@@ -80,133 +80,133 @@ export default function BrowseServicesPage(): React.JSX.Element {
       <Navbar />
       <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-text-primary mb-2">Browse Services</h1>
-          <p className="text-text-secondary">
-            Discover professional services from talented freelancers
-          </p>
-        </div>
+          {/* Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-text-primary mb-2">Browse Services</h1>
+            <p className="text-text-secondary">
+              Discover professional services from talented freelancers
+            </p>
+          </div>
 
-        {/* Search Bar */}
-        <form onSubmit={handleSearch} className="mb-8">
-          <div
-            className={cn(
-              "flex items-center gap-4 p-3 rounded-3xl bg-white",
-              "shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff]"
-            )}
-          >
+          {/* Search Bar */}
+          <form onSubmit={handleSearch} className="mb-8">
             <div
               className={cn(
-                "flex-1 flex items-center gap-2 px-4 py-2 rounded-xl",
-                "bg-background",
-                "shadow-[inset_2px_2px_4px_#d1d5db,inset_-2px_-2px_4px_#ffffff]"
+                "flex items-center gap-4 p-3 rounded-3xl bg-white",
+                "shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff]"
               )}
             >
-              <svg
-                className="h-5 w-5 text-text-secondary/50 flex-shrink-0"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-              <input
-                type="text"
-                placeholder="Search services by title or description..."
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
+              <div
                 className={cn(
-                  "flex-1 py-0.5 text-sm text-text-primary placeholder-text-secondary/50",
-                  "bg-transparent focus:outline-none"
+                  "flex-1 flex items-center gap-2 px-4 py-2 rounded-xl",
+                  "bg-background",
+                  "shadow-[inset_2px_2px_4px_#d1d5db,inset_-2px_-2px_4px_#ffffff]"
                 )}
-              />
-            </div>
-            <button
-              type="submit"
-              className={cn(
-                "p-2.5 rounded-xl flex-shrink-0",
-                "bg-primary text-white",
-                "hover:bg-primary-hover transition-all duration-200",
-                "shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]",
-                "hover:shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff]",
-                "active:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.2)]"
-              )}
-              aria-label="Search"
-            >
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              >
+                <svg
+                  className="h-5 w-5 text-text-secondary/50 flex-shrink-0"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Search services by title or description..."
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  className={cn(
+                    "flex-1 py-0.5 text-sm text-text-primary placeholder-text-secondary/50",
+                    "bg-transparent focus:outline-none"
+                  )}
                 />
-              </svg>
-            </button>
-          </div>
-        </form>
-
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Filters Sidebar */}
-          <div className="lg:col-span-1">
-            <MarketplaceFilters filters={filters} onChange={setFilters} priceLabel="Price" />
-          </div>
-
-          {/* Services Grid */}
-          <div className="lg:col-span-3">
-            {isLoading ? (
-              <div className="flex items-center justify-center py-20">
-                <LoadingSpinner className="text-primary" />
               </div>
-            ) : error ? (
-              <EmptyState icon={ICON_PATHS.alertCircle} message={error} />
-            ) : services.length === 0 ? (
-              <EmptyState
-                icon={ICON_PATHS.briefcase}
-                message="No services found. Try adjusting your filters or search terms"
-              />
-            ) : (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                  {services.map((service) => (
-                    <ServiceCard key={service.id} service={service} />
-                  ))}
-                </div>
-
-                {/* Load More Button */}
-                {hasMore && (
-                  <div className="flex justify-center mt-8">
-                    <button
-                      onClick={loadMore}
-                      className={cn(
-                        "px-8 py-3 rounded-xl",
-                        "bg-white text-primary font-medium",
-                        "shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]",
-                        "hover:shadow-[2px_2px_4px_#d1d5db,-2px_-2px_4px_#ffffff]",
-                        "active:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.1)]",
-                        "transition-all duration-200"
-                      )}
-                    >
-                      Load More
-                    </button>
-                  </div>
+              <button
+                type="submit"
+                className={cn(
+                  "p-2.5 rounded-xl flex-shrink-0",
+                  "bg-primary text-white",
+                  "hover:bg-primary-hover transition-all duration-200",
+                  "shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]",
+                  "hover:shadow-[6px_6px_12px_#d1d5db,-6px_-6px_12px_#ffffff]",
+                  "active:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.2)]"
                 )}
+                aria-label="Search"
+              >
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </button>
+            </div>
+          </form>
 
-                {/* Results Count */}
-                <div className="mt-6 text-center text-sm text-text-secondary">
-                  Showing {services.length} service{services.length !== 1 ? "s" : ""}
-                  {hasMore && " (more available)"}
+          {/* Main Content */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            {/* Filters Sidebar */}
+            <div className="lg:col-span-1">
+              <MarketplaceFilters filters={filters} onChange={setFilters} priceLabel="Price" />
+            </div>
+
+            {/* Services Grid */}
+            <div className="lg:col-span-3">
+              {isLoading ? (
+                <div className="flex items-center justify-center py-20">
+                  <LoadingSpinner className="text-primary" />
                 </div>
-              </>
-            )}
+              ) : error ? (
+                <EmptyState icon={ICON_PATHS.alertCircle} message={error} />
+              ) : services.length === 0 ? (
+                <EmptyState
+                  icon={ICON_PATHS.briefcase}
+                  message="No services found. Try adjusting your filters or search terms"
+                />
+              ) : (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                    {services.map((service) => (
+                      <ServiceCard key={service.id} service={service} />
+                    ))}
+                  </div>
+
+                  {/* Load More Button */}
+                  {hasMore && (
+                    <div className="flex justify-center mt-8">
+                      <button
+                        onClick={loadMore}
+                        className={cn(
+                          "px-8 py-3 rounded-xl",
+                          "bg-white text-primary font-medium",
+                          "shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff]",
+                          "hover:shadow-[2px_2px_4px_#d1d5db,-2px_-2px_4px_#ffffff]",
+                          "active:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.1)]",
+                          "transition-all duration-200"
+                        )}
+                      >
+                        Load More
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Results Count */}
+                  <div className="mt-6 text-center text-sm text-text-secondary">
+                    Showing {services.length} service{services.length !== 1 ? "s" : ""}
+                    {hasMore && " (more available)"}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
-        </div>
         </div>
       </div>
     </>
