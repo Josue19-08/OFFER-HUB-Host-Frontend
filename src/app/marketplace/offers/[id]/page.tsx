@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { getPublicOfferById, type MarketplaceOffer } from "@/lib/api/marketplace";
-import { applyToOffer } from "@/lib/api/applications";
+import { applyToOffer, getMyApplications } from "@/lib/api/applications";
 import { useAuthStore } from "@/stores/auth-store";
 import { ApplyModal } from "@/components/marketplace/ApplyModal";
 import { Icon, ICON_PATHS, LoadingSpinner } from "@/components/ui/Icon";
@@ -57,6 +57,23 @@ export default function OfferDetailPage(): React.JSX.Element {
 
     fetchOffer();
   }, [offerId]);
+
+  // Check if user already applied to this offer
+  useEffect(() => {
+    async function checkExistingApplication() {
+      if (!token || !offerId) return;
+
+      try {
+        const myApplications = await getMyApplications(token);
+        const alreadyApplied = myApplications.some(app => app.offerId === offerId);
+        setHasApplied(alreadyApplied);
+      } catch (err) {
+        console.error("Failed to check existing application:", err);
+      }
+    }
+
+    checkExistingApplication();
+  }, [token, offerId]);
 
   async function handleApply(coverLetter: string, proposedRate?: string) {
     if (!token) return;
@@ -264,8 +281,8 @@ export default function OfferDetailPage(): React.JSX.Element {
                   </p>
                 </>
               ) : hasApplied ? (
-                <div className="p-3 rounded-xl bg-success/10 text-success text-center text-sm font-medium">
-                  Application submitted successfully!
+                <div className="p-3 rounded-xl bg-primary/10 text-primary text-center text-sm font-medium">
+                  You&apos;ve already applied to this offer
                 </div>
               ) : (
                 <button
