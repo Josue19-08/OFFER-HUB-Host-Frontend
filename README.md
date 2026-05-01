@@ -34,7 +34,7 @@ src/
   lib/           # Utilities
   services/      # API client
   types/         # TypeScript definitions
-docs/            # Documentation
+docs/            # Documentation (docs)
 ```
 
 ## Documentation
