@@ -56,7 +56,7 @@ function NewDisputeForm(): React.JSX.Element {
     async function loadOrders(): Promise<void> {
       setOrdersLoading(true);
       try {
-        const orders = await listOrders(token, userId, {
+        const orders = await listOrders(token!, userId!, {
           role: "buyer",
           status: "IN_PROGRESS",
         });
