@@ -45,10 +45,8 @@ export async function changePassword(
 }
 
 export async function verifyEmail(token: string): Promise<{ message: string }> {
-  const response = await fetch(`${API_URL}/auth/verify-email`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ token }),
+  const response = await fetch(`${API_URL}/auth/verify-email?token=${encodeURIComponent(token)}`, {
+    method: "GET",
   });
 
   if (!response.ok) {
@@ -61,7 +59,7 @@ export async function verifyEmail(token: string): Promise<{ message: string }> {
 }
 
 export async function sendVerification(token: string): Promise<{ message: string }> {
-  const response = await fetch(`${API_URL}/auth/verify-email/request`, {
+  const response = await fetch(`${API_URL}/auth/send-verification`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
